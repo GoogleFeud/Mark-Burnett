@@ -4,13 +4,11 @@ const Settings = require("../../../settings.json");
 const Utils = require("../../Util/utils.js");
 
 class Client extends Nakamura.Client {
-  constructor(commandPath, eventPath) {
+  constructor(commandPath, eventPath, database) {
       super(Settings.token);
 
-      this.cantTalk = new Set(); 
-      this.guilds = new Map();
-
       this.commands = new Map();
+      this.db = database;
 
       let files = Utils.getFilesFromDir(commandPath);
       for (let file of files) {
@@ -37,9 +35,13 @@ class Client extends Nakamura.Client {
       return this.cantTalk.has(channelId);
   }
 
-  send(channelId, content, user) {
-      if (user) return this.sendToUser(channelId, content);
-      return this.sendToChannel(channelId, content);
+  async send(channelId, content, user) {
+      try {
+      if (user) return await this.sendToUser(channelId, content);
+      return await this.sendToChannel(channelId, content);
+      }catch(err) {
+          return;
+      }
   }
 
 

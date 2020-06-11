@@ -21,6 +21,7 @@
     "erlpack": "^0.1.3",
     "eventemitter3": "^4.0.4",
     "form-data": "^3.0.0",
+    "mongodb": "^3.5.8",
     "nakamura": "github:GoogleFeud/Nakamura",
     "node-fetch": "^2.6.0"
   }

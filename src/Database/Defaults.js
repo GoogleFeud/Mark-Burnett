@@ -23,27 +23,25 @@ class DefaultCache extends Map {
         this.collection = collection;
         this.ObjectClass = ObjClass;
         this.defaultArgs = DefaultArgs;
+        this._keyCache = [];
     }
 
     create(data) {
         data = Object.assign({}, this.defaultArgs, data);
         this.collection.insertOne(data);
+        this._keyCache.push(data._id);
         return new this.ObjectClass(this.collection, data);
     }
 
     async get(id) {
-        if (this.has(id)) return this.get(id);
+        if (this.has(id)) return super.get(id);
         const entry = await this.collection.findOne({_id: id});
         if (!entry) return null;
         const cl = new this.ObjectClass(this.collection, entry);
+        if (this.size > this.limit) this.shift();
+        this._keyCache.push(id);
         this.set(cl.id, cl);
-        return c;
-    }
-
-    async createOrGet(data) {
-        data = Object.assign({}, this.defaultArgs, data);
-        await this.collection.updateOne({_id: data._id}, {$set: data}, { upsert: true});
-        return new this.ObjectClass(this.collection, data);
+        return cl;
     }
  
     update(id, data) {
@@ -55,7 +53,8 @@ class DefaultCache extends Map {
     }
 
     delete(id) {
-        this.delete(id);
+        super.delete(id);
+        this._keyCache = [...this.keys()];
         return this.collection.deleteOne({_id: id});
     }
 
@@ -67,7 +66,9 @@ class DefaultCache extends Map {
         return this.collection.estimatedDocumentCount({maxTimeMS})
     }
 
-
+    shift() {
+        super.delete(this._keyCache[0]);
+    }
 
 }
 

@@ -10,6 +10,16 @@ class DefaultObject {
         return this.collection.updateOne({_id: this.id}, {$set: obj});
     }
 
+    inc(key, v = 1) {
+        this[key] += v;
+        return this.collection.updateOne({_id: this.id}, {$set: {[key]: this[key]}})
+    }
+
+    dec(key, v = 1) {
+        this[key] -= v;
+        return this.collection.updateOne({_id: this.id}, {$set: {[key]: this[key]}})
+    }
+
     delete() {
         return this.collection.deleteOne({_id: this.id});
     }
@@ -19,7 +29,7 @@ class DefaultObject {
 class DefaultCache extends Map {
     constructor(collection, ObjClass, DefaultArgs, maxSize) {
         super();
-        this.limit = maxSize || 100;
+        this.limit = maxSize || 1000;
         this.collection = collection;
         this.ObjectClass = ObjClass;
         this.defaultArgs = DefaultArgs;
@@ -29,6 +39,7 @@ class DefaultCache extends Map {
     create(data) {
         data = Object.assign({}, this.defaultArgs, data);
         this.collection.insertOne(data);
+        if (this.size > this.limit) this.shift();
         this._keyCache.push(data._id);
         return new this.ObjectClass(this.collection, data);
     }
@@ -38,7 +49,6 @@ class DefaultCache extends Map {
         const entry = await this.collection.findOne({_id: id});
         if (!entry) return null;
         const cl = new this.ObjectClass(this.collection, entry);
-        if (this.size > this.limit) this.shift();
         this._keyCache.push(id);
         this.set(cl.id, cl);
         return cl;

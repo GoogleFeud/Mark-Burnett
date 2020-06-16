@@ -2,6 +2,7 @@
 const Nakamura = require("nakamura");
 const Settings = require("../../../settings.json");
 const Utils = require("../../Util/utils.js");
+const Constants = require("../../Util/constants.js");
 
 class Client extends Nakamura.Client {
   constructor(commandPath, eventPath, database) {
@@ -13,6 +14,7 @@ class Client extends Nakamura.Client {
       let files = Utils.getFilesFromDir(commandPath);
       for (let file of files) {
           file = require(`../Commands/${file}`);
+          if (file.init) file.init(file, Utils, Constants);
           this.commands.set(file.name, file);
       }
 
@@ -40,6 +42,7 @@ class Client extends Nakamura.Client {
       if (user) return await this.sendToUser(channelId, content);
       return await this.sendToChannel(channelId, content);
       }catch(err) {
+          console.log(err);
           return;
       }
   }

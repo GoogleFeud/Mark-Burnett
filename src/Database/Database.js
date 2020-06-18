@@ -2,8 +2,10 @@
 const { MongoClient }= require("mongodb");
 const { exec } = require("child_process");
 const Defaults = require("./Defaults.js");
-const User = require("./Objects/User.js");
-const Utils = require("../Util/utils.js");
+const Player = require("./Objects/Player.js");
+const Save = require("./Objects/Save.js");
+const Guild = require("./Objects/Guild.js");
+const Location = require("./Objects/Location.js");
 
 module.exports = class Database extends MongoClient {
     constructor() {
@@ -12,8 +14,11 @@ module.exports = class Database extends MongoClient {
 
     async connect(uri, opts) {
         this.client = await MongoClient.connect(uri, opts);
-        this.db = this.client.db("game-of-life");
-        this.users = new Defaults.DefaultCache(this.db.collection("users"), User, {coins: 0, tickets: 1, inventory: [], fame: 0, happiness: 90, health: 100, brains: Utils.rngBtw(10, 95)});
+        this.db = this.client.db("survivor");
+        this.players = new Defaults.DefaultCache(this.db.collection("players"), Player, {});
+        this.saves = new Defaults.DefaultCache(this.db.collection("saves"), Save, {});
+        this.guilds = new Defaults.DefaultCache(this.db.collection("guilds"), Guild, {});
+        this.locations = new Defaults.DefaultCache(this.db.collection("locations"), Location, {});
     }
 
     static startServer() {

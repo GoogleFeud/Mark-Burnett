@@ -33,10 +33,6 @@ class Client extends Nakamura.Client {
       }
   }
 
-  cantTalkIn(channelId) {
-      return this.cantTalk.has(channelId);
-  }
-
   async send(channelId, content, user) {
       try {
       if (user) return await this.sendToUser(channelId, content);

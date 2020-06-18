@@ -1,7 +1,6 @@
 
 
 const fs = require("fs");
-const Bitfield = require("./Bitfield.js");
 
 function getFilesFromDir(dir, folderName) {
     const things = fs.readdirSync(dir);
@@ -19,13 +18,9 @@ function rngBtw(min, max) {
     return Math.floor(Math.random() * (max - min +1)) + min;
 }
 
-function bitfield(...bits) {
-      return new Bitfield(...bits);
-}
 
 
 module.exports = {
     getFilesFromDir,
-    rngBtw,
-    bitfield
+    rngBtw
 }

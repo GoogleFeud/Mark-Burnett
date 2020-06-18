@@ -7,4 +7,7 @@ module.exports = class Save extends Default.DefaultObject {
         this.commandOptions = data.commandOptions;
     }
 
+    static default = {
+        commandOptions: {}
+    }
 }

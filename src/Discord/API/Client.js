@@ -2,7 +2,6 @@
 const Nakamura = require("nakamura");
 const Settings = require("../../../settings.json");
 const Utils = require("../../Util/utils.js");
-const Constants = require("../../Util/constants.js");
 
 class Client extends Nakamura.Client {
   constructor(commandPath, eventPath, database) {
@@ -13,9 +12,10 @@ class Client extends Nakamura.Client {
 
       let files = Utils.getFilesFromDir(commandPath);
       for (let file of files) {
-          file = require(`../Commands/${file}`);
-          if (file.init) file.init(file, Utils, Constants);
-          this.commands.set(file.name, file);
+          const fileObj = require(`../Commands/${file}`);
+          const arr = file.split("/");
+          if (arr.length === 3) fileObj.name = arr[1] + fileObj.name;
+          this.commands.set(fileObj.name, fileObj);
       }
 
       files = Utils.getFilesFromDir(eventPath);
@@ -31,6 +31,11 @@ class Client extends Nakamura.Client {
       for (let [, command] of this.commands) {
           if (command.aliases && command.aliases.includes(cmdName)) return command;
       }
+  }
+
+  run(cmdName, ...params) {
+      const cmd = this.getCommand(cmdName);
+      if (cmd) cmd.execute(...params);
   }
 
   async send(channelId, content, user) {

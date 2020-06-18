@@ -15,10 +15,10 @@ module.exports = class Database extends MongoClient {
     async connect(uri, opts) {
         this.client = await MongoClient.connect(uri, opts);
         this.db = this.client.db("survivor");
-        this.players = new Defaults.DefaultCache(this.db.collection("players"), Player, {});
-        this.saves = new Defaults.DefaultCache(this.db.collection("saves"), Save, {});
-        this.guilds = new Defaults.DefaultCache(this.db.collection("guilds"), Guild, {});
-        this.locations = new Defaults.DefaultCache(this.db.collection("locations"), Location, {});
+        this.players = new Defaults.DefaultCache(this.db.collection("players"), Player);
+        this.saves = new Defaults.DefaultCache(this.db.collection("saves"), Save);
+        this.guilds = new Defaults.DefaultCache(this.db.collection("guilds"), Guild);
+        this.locations = new Defaults.DefaultCache(this.db.collection("locations"), Location);
     }
 
     static startServer() {

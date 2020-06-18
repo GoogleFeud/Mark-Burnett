@@ -27,17 +27,16 @@ class DefaultObject {
 }
 
 class DefaultCache extends Map {
-    constructor(collection, ObjClass, DefaultArgs, maxSize) {
+    constructor(collection, ObjClass, maxSize) {
         super();
         this.limit = maxSize || 1000;
         this.collection = collection;
         this.ObjectClass = ObjClass;
-        this.defaultArgs = DefaultArgs;
         this._keyCache = [];
     }
 
     create(data) {
-        data = Object.assign({}, this.defaultArgs, data);
+        data = Object.assign({}, this.ObjectClass.default || {}, data);
         this.collection.insertOne(data);
         if (this.size > this.limit) this.shift();
         this._keyCache.push(data._id);
@@ -45,17 +44,29 @@ class DefaultCache extends Map {
     }
 
     async get(id) {
-        if (this.has(id)) return super.get(id);
+        if (super.has(id)) return super.get(id);
         const entry = await this.collection.findOne({_id: id});
         if (!entry) return null;
         const cl = new this.ObjectClass(this.collection, entry);
+        if (this.size > this.limit) this.shift();
+        this._keyCache.push(id);
+        this.set(cl.id, cl);
+        return cl;
+    }
+
+    async has(id) {
+        if (super.has(id)) return true;
+        const entry = await this.collection.findOne({_id: id});
+        if (!entry) return false;
+        const cl = new this.ObjectClass(this.collection, entry);
+        if (this.size > this.limit) this.shift();
         this._keyCache.push(id);
         this.set(cl.id, cl);
         return cl;
     }
  
     update(id, data) {
-        if (this.has(id)) {
+        if (super.has(id)) {
             const entry = this.get(id);
             Object.assign(entry, data);
         }

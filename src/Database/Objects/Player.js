@@ -11,5 +11,8 @@ module.exports = class User extends Default.DefaultObject {
         this.lastLocationId = data.lastLocationId;
     }
 
-
+    static default = {
+        stamina: 0
+    }
+    
 }

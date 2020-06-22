@@ -6,6 +6,7 @@ const Player = require("./Objects/Player.js");
 const Save = require("./Objects/Save.js");
 const Guild = require("./Objects/Guild.js");
 const Location = require("./Objects/Location.js");
+const Tribe = require("./Objects/Tribe.js");
 
 module.exports = class Database extends MongoClient {
     constructor() {
@@ -13,12 +14,14 @@ module.exports = class Database extends MongoClient {
     }
 
     async connect(uri, opts) {
+        this.uri = uri;
         this.client = await MongoClient.connect(uri, opts);
         this.db = this.client.db("survivor");
         this.players = new Defaults.DefaultCache(this.db.collection("players"), Player);
         this.saves = new Defaults.DefaultCache(this.db.collection("saves"), Save);
         this.guilds = new Defaults.DefaultCache(this.db.collection("guilds"), Guild);
         this.locations = new Defaults.DefaultCache(this.db.collection("locations"), Location);
+        this.tribes = new Defaults.DefaultCache(this.db.collection("tribes"), Tribe)
     }
 
     static startServer() {

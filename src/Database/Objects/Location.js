@@ -15,5 +15,9 @@ module.exports = class Location extends Default.DefaultObject {
         this.inner = data.inner; // {"option": "text..."}
     }
 
-
+    static default = {
+        inner: {},
+        staminaRequired: 1
+    }
+    
 }

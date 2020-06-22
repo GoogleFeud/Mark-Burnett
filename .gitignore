@@ -7,3 +7,7 @@ settings.json
 
 # Database Server
 src/Database/mongodb
+
+# Compiled Javascript code
+
+src/Dashboard/static/bundle.js

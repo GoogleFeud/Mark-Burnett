@@ -1,5 +1,7 @@
 
 require('regenerator-runtime');
+import SaveEnter from "./components/saveEnter";
+import Dashboard from "./components/dashboard";
 
 class App extends React.Component {
     constructor(props) {
@@ -7,45 +9,51 @@ class App extends React.Component {
         this.state = {
             saveChosen: null
         }
+        this.data;
     }
 
     render() {
-        if (!saveChosen) {
-            //
+        if (!this.state.saveChosen) {
+            return <SaveEnter app={this}></SaveEnter>
         }else {
-
+            return <Dashboard app={this}></Dashboard>
         }
     }
 
     setSaveFile(file) {
-        this.setState({saveChosen: file});
+        this.data = file;
+        this.setState({saveChosen: file.save});
     }
 
     async get(endpoint) {
         const res = await fetch(endpoint);
+        if (!res.ok) return {err: res.statusText}
         return res.json()
     }
 
     async post(endpoint, data) {
         Object.assign(data, {method: "POST"});
         const res = await fetch(endpoint, data);
+        if (!res.ok) return {err: res.statusText}
         return res.json();
     }
 
     async delete(endpoint, data) {
         Object.assign(data, {method: "DELETE"});
         const res = await fetch(endpoint, data);
+        if (!res.ok) return {err: res.statusText}
         return res.json();
     }
 
     async patch(endpoint, data) {
         Object.assign(data, {method: "PATCH"});
         const res = await fetch(endpoint, data);
+        if (!res.ok) return {err: res.statusText}
         return res.json();
     }
 
 }
 
 window.addEventListener("load", () => {
-    console.log(1);
+    ReactDOM.render(<App />, document.getElementById("main"))
 })

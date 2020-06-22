@@ -4,3 +4,17 @@ body {
     margin: 0;
     padding: 0;
 }
+
+.saveBod {
+    margin-top: 8%;
+    text-align: center;
+}
+
+.survivorLogo {
+    margin-bottom: 20px;
+}
+
+.saveErr {
+    color: red;
+    font-weight: bold;
+}

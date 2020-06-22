@@ -2,6 +2,16 @@
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _saveEnter = require("./components/saveEnter");
+
+var _saveEnter2 = _interopRequireDefault(_saveEnter);
+
+var _dashboard = require("./components/dashboard");
+
+var _dashboard2 = _interopRequireDefault(_dashboard);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -23,20 +33,24 @@ var App = function (_React$Component) {
         _this.state = {
             saveChosen: null
         };
+        _this.data;
         return _this;
     }
 
     _createClass(App, [{
         key: "render",
         value: function render() {
-            if (!saveChosen) {
-                //
-            } else {}
+            if (!this.state.saveChosen) {
+                return React.createElement(_saveEnter2.default, { app: this });
+            } else {
+                return React.createElement(_dashboard2.default, { app: this });
+            }
         }
     }, {
         key: "setSaveFile",
         value: function setSaveFile(file) {
-            this.setState({ saveChosen: file });
+            this.data = file;
+            this.setState({ saveChosen: file.save });
         }
     }, {
         key: "get",
@@ -52,9 +66,18 @@ var App = function (_React$Component) {
 
                             case 2:
                                 res = _context.sent;
+
+                                if (res.ok) {
+                                    _context.next = 5;
+                                    break;
+                                }
+
+                                return _context.abrupt("return", { err: res.statusText });
+
+                            case 5:
                                 return _context.abrupt("return", res.json());
 
-                            case 4:
+                            case 6:
                             case "end":
                                 return _context.stop();
                         }
@@ -83,9 +106,18 @@ var App = function (_React$Component) {
 
                             case 3:
                                 res = _context2.sent;
+
+                                if (res.ok) {
+                                    _context2.next = 6;
+                                    break;
+                                }
+
+                                return _context2.abrupt("return", { err: res.statusText });
+
+                            case 6:
                                 return _context2.abrupt("return", res.json());
 
-                            case 5:
+                            case 7:
                             case "end":
                                 return _context2.stop();
                         }
@@ -114,9 +146,18 @@ var App = function (_React$Component) {
 
                             case 3:
                                 res = _context3.sent;
+
+                                if (res.ok) {
+                                    _context3.next = 6;
+                                    break;
+                                }
+
+                                return _context3.abrupt("return", { err: res.statusText });
+
+                            case 6:
                                 return _context3.abrupt("return", res.json());
 
-                            case 5:
+                            case 7:
                             case "end":
                                 return _context3.stop();
                         }
@@ -145,9 +186,18 @@ var App = function (_React$Component) {
 
                             case 3:
                                 res = _context4.sent;
+
+                                if (res.ok) {
+                                    _context4.next = 6;
+                                    break;
+                                }
+
+                                return _context4.abrupt("return", { err: res.statusText });
+
+                            case 6:
                                 return _context4.abrupt("return", res.json());
 
-                            case 5:
+                            case 7:
                             case "end":
                                 return _context4.stop();
                         }
@@ -167,5 +217,5 @@ var App = function (_React$Component) {
 }(React.Component);
 
 window.addEventListener("load", function () {
-    console.log(1);
+    ReactDOM.render(React.createElement(App, null), document.getElementById("main"));
 });

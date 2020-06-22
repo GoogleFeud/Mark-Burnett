@@ -35,12 +35,26 @@ App.get("/", (req, res) => {
    res.sendFile(`${__dirname}/index.html`);
 });
 
+App.get("/api/saves/:saveId", async (req, res) => {
+   const save = await db.saves.get(req.params.saveId);
+   if (!save) return res.sendStatus(404);
+   const players = await db.players.all();
+   const tribes = await db.tribes.all();
+   const locs = await db.locations.all();
+   res.json({
+      save: save.serialize(),
+      players: players.map(p => p.serialize()),
+      tribes: tribes.map(t => t.serialize()),
+      locations: locs.map(l => l.serialize())
+   });
+});
+
 /**App.get("/api/:saveId/players", (req, res) => {
 
 }) **/
 
 
-App.listen(5000, () => {
+App.listen(Settings.port || 5000, () => {
   if (!master) db.connect(`mongodb+srv://${Settings.username}:${Settings.password}@cluster0-grxvc.mongodb.net/survivor?retryWrites=true&w=majority`)
 });
 

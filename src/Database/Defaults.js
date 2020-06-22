@@ -5,6 +5,14 @@ class DefaultObject {
         this.id = data._id;
     }
 
+    serialize() {
+        const res = {};
+        for (let i in this) {
+            if (i !== "collection") res[i] = this[i];
+        }
+        return res;
+    }
+
     update(obj) {
         Object.assign(this, obj);
         return this.collection.updateOne({_id: this.id}, {$set: obj});
@@ -80,9 +88,9 @@ class DefaultCache extends Map {
     }
 
     async all() {
-        if (await this.size() === this.size) return [...this.values()];
+        if (await this.size() === super.size) return [...this.values()];
         const all = await this.collection.find();
-        const arr = all.toArray();
+        const arr = await all.toArray();
         for (let item of arr) {
             this.set(item._id, new this.ObjectClass(this.collection, item));
         }

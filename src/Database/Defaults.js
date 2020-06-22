@@ -79,8 +79,14 @@ class DefaultCache extends Map {
         return this.collection.deleteOne({_id: id});
     }
 
-    all() {
-        return this.collection.find();
+    async all() {
+        if (await this.size() === this.size) return [...this.values()];
+        const all = await this.collection.find();
+        const arr = all.toArray();
+        for (let item of arr) {
+            this.set(item._id, new this.ObjectClass(this.collection, item));
+        }
+        return arr;
     }
 
     size(maxTimeMS = 2000) {

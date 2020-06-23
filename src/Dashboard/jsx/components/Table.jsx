@@ -1,18 +1,30 @@
 
 
+
+//first: ascending (asc)
+//second descending (des)
 export default class Table extends React.Component {
     constructor(props) {
-        super();
+        super(props);
+        this.state = {
+            sort: []
+        }
     }
 
     render() {
-        const s = this.props.cols.map(k => <td scope="col">{k}</td>);
-        s.push(<td scope="col"><input defaultValue="New" className="inputCh" onKeyUp={e => {
+        const s = this.props.cols.map((k, id) => <td scope="col" key={id} onClick={() => {
+            let typ = "asc";
+            if (this.state.sort[0] === k && this.state.sort[1] === "asc") typ = "des";
+            this.setState({sort: [k, typ]})
+        }}>{k}</td>);
+        s.push(<td scope="col"><input defaultValue="New" className="inputCh" key={s.length+1} onKeyUp={e => {
             if (e.keyCode === 13 || e.keyCode === 32) {
                 this.props.addCol(e.target.value);
             }
         }}>
         </input></td>)
+        const p = this.props.body(this.state.sort);
+        p.push()
         return(
             <React.Fragment>
                <table class="table table-striped table-bordered table-hover table-sm table-responsive">
@@ -23,7 +35,7 @@ export default class Table extends React.Component {
            </tr>
          </thead>
          <tbody>
-             {this.props.body}
+             {this.props.body(this.state.sort)}
          </tbody>
        </table> 
             </React.Fragment>

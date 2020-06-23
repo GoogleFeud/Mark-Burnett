@@ -9,7 +9,7 @@ class DefaultObject {
     serialize() {
         const res = {};
         for (let i in this) {
-            if (i !== "collection") res[i] = this[i];
+            if (i !== "collection" && !i.startsWith("_")) res[i] = this[i];
         }
         return res;
     }

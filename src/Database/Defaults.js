@@ -3,6 +3,7 @@ class DefaultObject {
     constructor(collection, data) {
         this.collection = collection;
         this.id = data._id;
+        Object.assign(this, data);
     }
 
     serialize() {
@@ -35,19 +36,17 @@ class DefaultObject {
 }
 
 class DefaultCache extends Map {
-    constructor(collection, ObjClass, maxSize) {
+    constructor(collection, ObjClass) {
         super();
-        this.limit = maxSize || 1000;
         this.collection = collection;
         this.ObjectClass = ObjClass;
-        this._keyCache = [];
+        this._valCache = [];
     }
 
     create(data) {
         data = Object.assign({}, this.ObjectClass.default || {}, data);
         this.collection.insertOne(data);
-        if (this.size > this.limit) this.shift();
-        this._keyCache.push(data._id);
+        this._valCache = null;
         return new this.ObjectClass(this.collection, data);
     }
 
@@ -56,8 +55,6 @@ class DefaultCache extends Map {
         const entry = await this.collection.findOne({_id: id});
         if (!entry) return null;
         const cl = new this.ObjectClass(this.collection, entry);
-        if (this.size > this.limit) this.shift();
-        this._keyCache.push(id);
         this.set(cl.id, cl);
         return cl;
     }
@@ -67,8 +64,6 @@ class DefaultCache extends Map {
         const entry = await this.collection.findOne({_id: id});
         if (!entry) return false;
         const cl = new this.ObjectClass(this.collection, entry);
-        if (this.size > this.limit) this.shift();
-        this._keyCache.push(id);
         this.set(cl.id, cl);
         return cl;
     }
@@ -83,27 +78,35 @@ class DefaultCache extends Map {
 
     delete(id) {
         super.delete(id);
-        this._keyCache = [...this.keys()];
+        this._valCache = null;
         return this.collection.deleteOne({_id: id});
     }
 
-    async all() {
-        if (await this.size() === super.size) return [...this.values()];
+    filter(query) {
+      return this.collection.find(query);   
+    }
+
+    async mapAll(mapFn, query = {}) {
+        const all = await this.collection.find(query);
+        const res = [];
+        await all.forEach(entry => {
+            res.push(mapFn(new this.ObjectClass(this.collection, entry)));
+        });
+        return res;
+    }
+
+    async sync() {
         const all = await this.collection.find();
-        const arr = await all.toArray();
-        for (let item of arr) {
-            this.set(item._id, new this.ObjectClass(this.collection, item));
-        }
-        return arr;
+        all.forEach(entry => {
+            this.set(entry._id, new this.ObjectClass(this.collection, entry));
+        });
     }
 
-    size(maxTimeMS = 2000) {
-        return this.collection.estimatedDocumentCount({maxTimeMS})
+    toArray() {
+        if (!this._valCache) this._valCache = [...this.values()];
+        return this._valCache;
     }
 
-    shift() {
-        super.delete(this._keyCache[0]);
-    }
 
 }
 

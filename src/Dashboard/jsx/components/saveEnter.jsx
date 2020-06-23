@@ -20,6 +20,7 @@ export default class SaveEnter extends React.Component {
                 <button onClick={async () => {
                     const save = await this.props.app.get(`api/saves/${this.input}`);
                     if (save.err) return this.err(save.err);
+                    console.log(save);
                     this.props.app.setSaveFile(save);
                 }}>Go</button>
                 <p class="saveErr">{this.state.error}</p>

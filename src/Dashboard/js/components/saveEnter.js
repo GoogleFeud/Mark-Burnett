@@ -71,9 +71,10 @@ var SaveEnter = function (_React$Component) {
                                             return _context.abrupt("return", _this2.err(save.err));
 
                                         case 5:
+                                            console.log(save);
                                             _this2.props.app.setSaveFile(save);
 
-                                        case 6:
+                                        case 7:
                                         case "end":
                                             return _context.stop();
                                     }

@@ -735,15 +735,232 @@ try {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.default = Dashboard;
-function Dashboard(props) {
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _Table = require("./Table");
+
+var _Table2 = _interopRequireDefault(_Table);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function Input(props) {
+    return React.createElement("input", { defaultValue: props.value, className: "inputCh", onKeyUp: function onKeyUp(e) {
+            if (e.keyCode === 13 || e.keyCode === 32) {
+                props.update(props.player.id, props._key, e.target.value);
+            }
+        } });
+}
+
+function Player(props) {
     return React.createElement(
-        "p",
+        "tr",
         null,
-        "Test!"
+        React.createElement(
+            "th",
+            { scope: "row" },
+            props.number
+        ),
+        props.allProps.map(function (key) {
+            if (props.player[key] === null || props.player[key] === undefined) return React.createElement(
+                "td",
+                null,
+                React.createElement(Input, { player: props.player, _key: key, update: props.update })
+            );
+            return React.createElement(
+                "td",
+                null,
+                React.createElement(Input, { value: props.player[key], player: props.player, _key: key, update: props.update })
+            );
+        })
     );
 }
-},{}],3:[function(require,module,exports){
+
+var PlayerList = function (_React$Component) {
+    _inherits(PlayerList, _React$Component);
+
+    function PlayerList(props) {
+        _classCallCheck(this, PlayerList);
+
+        var _this = _possibleConstructorReturn(this, (PlayerList.__proto__ || Object.getPrototypeOf(PlayerList)).call(this, props));
+
+        var allProps = [];
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+            for (var _iterator = _this.props.players[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                var player = _step.value;
+
+                for (var key in player) {
+                    if (key === "saveId") continue;
+                    if (!allProps.includes(key)) allProps.push(key);
+                }
+            }
+        } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion && _iterator.return) {
+                    _iterator.return();
+                }
+            } finally {
+                if (_didIteratorError) {
+                    throw _iteratorError;
+                }
+            }
+        }
+
+        _this.state = {
+            cols: allProps
+        };
+
+        return _this;
+    }
+
+    _createClass(PlayerList, [{
+        key: "render",
+        value: function render() {
+            var _this2 = this;
+
+            return React.createElement(
+                React.Fragment,
+                null,
+                React.createElement(
+                    "h",
+                    { className: "header" },
+                    "Players"
+                ),
+                React.createElement(_Table2.default, { addCol: this.addCol.bind(this), cols: this.state.cols, body: this.props.players.map(function (p, i) {
+                        return React.createElement(Player, { allProps: _this2.state.cols, number: i + 1, player: p, update: _this2.update.bind(_this2) });
+                    }) })
+            );
+        }
+    }, {
+        key: "update",
+        value: function update(player, key, val) {
+            this.props.app.update("players", player, key, val);
+            console.log(this.props.app.changes);
+        }
+    }, {
+        key: "addCol",
+        value: function addCol(name) {
+            this.setState(function (prev) {
+                prev.cols.push(name);
+                return prev;
+            });
+        }
+    }]);
+
+    return PlayerList;
+}(React.Component);
+
+exports.default = PlayerList;
+},{"./Table":3}],3:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Table = function (_React$Component) {
+    _inherits(Table, _React$Component);
+
+    function Table(props) {
+        _classCallCheck(this, Table);
+
+        return _possibleConstructorReturn(this, (Table.__proto__ || Object.getPrototypeOf(Table)).call(this));
+    }
+
+    _createClass(Table, [{
+        key: "render",
+        value: function render() {
+            var _this2 = this;
+
+            var s = this.props.cols.map(function (k) {
+                return React.createElement(
+                    "td",
+                    { scope: "col" },
+                    k
+                );
+            });
+            s.push(React.createElement(
+                "td",
+                { scope: "col" },
+                React.createElement("input", { defaultValue: "New", className: "inputCh", onKeyUp: function onKeyUp(e) {
+                        if (e.keyCode === 13 || e.keyCode === 32) {
+                            _this2.props.addCol(e.target.value);
+                        }
+                    } })
+            ));
+            return React.createElement(
+                React.Fragment,
+                null,
+                React.createElement(
+                    "table",
+                    { "class": "table table-striped table-bordered table-hover table-sm table-responsive" },
+                    React.createElement(
+                        "thead",
+                        { "class": "thead-dark" },
+                        React.createElement(
+                            "tr",
+                            null,
+                            React.createElement(
+                                "th",
+                                { scope: "col" },
+                                "#"
+                            ),
+                            s
+                        )
+                    ),
+                    React.createElement(
+                        "tbody",
+                        null,
+                        this.props.body
+                    )
+                )
+            );
+        }
+    }]);
+
+    return Table;
+}(React.Component);
+
+exports.default = Table;
+},{}],4:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = Dashboard;
+
+var _Playerlist = require("./Playerlist");
+
+var _Playerlist2 = _interopRequireDefault(_Playerlist);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function Dashboard(props) {
+    return React.createElement(_Playerlist2.default, { app: props.app, players: props.app.data.players });
+}
+},{"./Playerlist":2}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -817,9 +1034,10 @@ var SaveEnter = function (_React$Component) {
                                             return _context.abrupt("return", _this2.err(save.err));
 
                                         case 5:
+                                            console.log(save);
                                             _this2.props.app.setSaveFile(save);
 
-                                        case 6:
+                                        case 7:
                                         case "end":
                                             return _context.stop();
                                     }
@@ -846,7 +1064,7 @@ var SaveEnter = function (_React$Component) {
 }(React.Component);
 
 exports.default = SaveEnter;
-},{}],4:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -860,6 +1078,8 @@ var _dashboard = require("./components/dashboard");
 var _dashboard2 = _interopRequireDefault(_dashboard);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
@@ -883,6 +1103,7 @@ var App = function (_React$Component) {
             saveChosen: null
         };
         _this.data;
+        _this.changes = { players: {}, tribes: {}, locations: {} }; // {players: [{id: someId, changes: {key: val} }] }
         return _this;
     }
 
@@ -1060,6 +1281,11 @@ var App = function (_React$Component) {
 
             return patch;
         }()
+    }, {
+        key: "update",
+        value: function update(objectType, id, key, value) {
+            if (this.changes[objectType][id]) this.changes[objectType][id][key] = value;else this.changes[objectType][id] = _defineProperty({}, key, value);
+        }
     }]);
 
     return App;
@@ -1068,4 +1294,4 @@ var App = function (_React$Component) {
 window.addEventListener("load", function () {
     ReactDOM.render(React.createElement(App, null), document.getElementById("main"));
 });
-},{"./components/dashboard":2,"./components/saveEnter":3,"regenerator-runtime":1}]},{},[4]);
+},{"./components/dashboard":4,"./components/saveEnter":5,"regenerator-runtime":1}]},{},[6]);

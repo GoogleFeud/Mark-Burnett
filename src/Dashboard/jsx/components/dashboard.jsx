@@ -1,7 +1,9 @@
 
 
+import Playerlist from "./Playerlist";
+
 export default function Dashboard(props) {
     return(
-        <p>Test!</p>
+        <Playerlist app={props.app} players={props.app.data.players}></Playerlist>
     )
 }

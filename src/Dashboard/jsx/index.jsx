@@ -10,6 +10,7 @@ class App extends React.Component {
             saveChosen: null
         }
         this.data;
+        this.changes = {players: {}, tribes: {}, locations: {}}; // {players: [{id: someId, changes: {key: val} }] }
     }
 
     render() {
@@ -50,6 +51,11 @@ class App extends React.Component {
         const res = await fetch(endpoint, data);
         if (!res.ok) return {err: res.statusText}
         return res.json();
+    }
+
+    update(objectType, id, key, value) {
+        if (this.changes[objectType][id]) this.changes[objectType][id][key] = value;
+        else this.changes[objectType][id] = {[key]: value}
     }
 
 }

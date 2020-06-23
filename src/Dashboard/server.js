@@ -38,14 +38,11 @@ App.get("/", (req, res) => {
 App.get("/api/saves/:saveId", async (req, res) => {
    const save = await db.saves.get(req.params.saveId);
    if (!save) return res.sendStatus(404);
-   const players = await db.players.all();
-   const tribes = await db.tribes.all();
-   const locs = await db.locations.all();
    res.json({
       save: save.serialize(),
-      players: players.map(p => p.serialize()),
-      tribes: tribes.map(t => t.serialize()),
-      locations: locs.map(l => l.serialize())
+      players: await db.players.mapAll(p => p.serialize(), {saveId: req.params.saveId}),
+      tribes: await db.tribes.mapAll(t => t.serialize(), {saveId: req.params.saveId}),
+      locations: await db.locations.mapAll(l => l.serialize(), {saveId: req.params.saveId})
    });
 });
 

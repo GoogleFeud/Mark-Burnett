@@ -32,11 +32,23 @@ var App = function (_React$Component) {
 
         var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
+        var save = localStorage.getItem("save");
+        if (save) {
+            _this.get("api/saves/" + save).then(function (saveFile) {
+                if (saveFile.err) {
+                    save = null;
+                    _this.setState({ saveChosen: null });
+                    window.alert(saveFile.err);
+                } else {
+                    console.log(saveFile);
+                    _this.setState({ data: saveFile });
+                }
+            });
+        }
         _this.state = {
-            saveChosen: null
+            saveChosen: save,
+            data: { players: [] }
         };
-        _this.data;
-        _this.changes = { players: {}, tribes: {}, locations: {} }; // {players: [{id: someId, changes: {key: val} }] }
         return _this;
     }
 
@@ -44,16 +56,16 @@ var App = function (_React$Component) {
         key: "render",
         value: function render() {
             if (!this.state.saveChosen) {
-                return React.createElement(_saveEnter2.default, { app: this });
+                return React.createElement(_saveEnter2.default, { app: this, data: this.state.data });
             } else {
-                return React.createElement(_dashboard2.default, { app: this });
+                return React.createElement(_dashboard2.default, { app: this, data: this.state.data });
             }
         }
     }, {
         key: "setSaveFile",
         value: function setSaveFile(file) {
-            this.data = file;
-            this.setState({ saveChosen: file.save });
+            localStorage.setItem("save", file.save.id);
+            this.setState({ saveChosen: file.save, data: file });
         }
     }, {
         key: "get",
@@ -104,23 +116,24 @@ var App = function (_React$Component) {
                         switch (_context2.prev = _context2.next) {
                             case 0:
                                 Object.assign(data, { method: "POST" });
-                                _context2.next = 3;
+                                if (!data.headers) data.headers = { "Content-Type": "application/json" };
+                                _context2.next = 4;
                                 return fetch(endpoint, data);
 
-                            case 3:
+                            case 4:
                                 res = _context2.sent;
 
                                 if (res.ok) {
-                                    _context2.next = 6;
+                                    _context2.next = 7;
                                     break;
                                 }
 
                                 return _context2.abrupt("return", { err: res.statusText });
 
-                            case 6:
+                            case 7:
                                 return _context2.abrupt("return", res.json());
 
-                            case 7:
+                            case 8:
                             case "end":
                                 return _context2.stop();
                         }
@@ -144,23 +157,24 @@ var App = function (_React$Component) {
                         switch (_context3.prev = _context3.next) {
                             case 0:
                                 Object.assign(data, { method: "DELETE" });
-                                _context3.next = 3;
+                                if (!data.headers) data.headers = { "Content-Type": "application/json" };
+                                _context3.next = 4;
                                 return fetch(endpoint, data);
 
-                            case 3:
+                            case 4:
                                 res = _context3.sent;
 
                                 if (res.ok) {
-                                    _context3.next = 6;
+                                    _context3.next = 7;
                                     break;
                                 }
 
                                 return _context3.abrupt("return", { err: res.statusText });
 
-                            case 6:
+                            case 7:
                                 return _context3.abrupt("return", res.json());
 
-                            case 7:
+                            case 8:
                             case "end":
                                 return _context3.stop();
                         }
@@ -184,23 +198,24 @@ var App = function (_React$Component) {
                         switch (_context4.prev = _context4.next) {
                             case 0:
                                 Object.assign(data, { method: "PATCH" });
-                                _context4.next = 3;
+                                if (!data.headers) data.headers = { "Content-Type": "application/json" };
+                                _context4.next = 4;
                                 return fetch(endpoint, data);
 
-                            case 3:
+                            case 4:
                                 res = _context4.sent;
 
                                 if (res.ok) {
-                                    _context4.next = 6;
+                                    _context4.next = 7;
                                     break;
                                 }
 
                                 return _context4.abrupt("return", { err: res.statusText });
 
-                            case 6:
+                            case 7:
                                 return _context4.abrupt("return", res.json());
 
-                            case 7:
+                            case 8:
                             case "end":
                                 return _context4.stop();
                         }
@@ -215,9 +230,14 @@ var App = function (_React$Component) {
             return patch;
         }()
     }, {
-        key: "update",
-        value: function update(objectType, id, key, value) {
-            if (this.changes[objectType][id]) this.changes[objectType][id][key] = value;else this.changes[objectType][id] = _defineProperty({}, key, value);
+        key: "updatePlayer",
+        value: function updatePlayer(id, key, value) {
+            if (!isNaN(value)) value = Number.parseFloat(value);
+            this.setState(function (prev) {
+                if (prev.players && prev.players[id]) prev.players[id][key] = value;
+                return prev;
+            });
+            return this.patch("/api/saves/" + this.state.saveChosen + "/players/" + id, { body: JSON.stringify(_defineProperty({}, key, value)) });
         }
     }]);
 

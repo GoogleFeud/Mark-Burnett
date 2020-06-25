@@ -1,5 +1,5 @@
 
-const { MongoClient }= require("mongodb");
+const { MongoClient } = require("mongodb");
 const { exec } = require("child_process");
 const Defaults = require("./Defaults.js");
 const Player = require("./Objects/Player.js");

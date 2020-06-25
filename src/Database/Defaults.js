@@ -1,4 +1,3 @@
-
 class DefaultObject {
     constructor(collection, data) {
         this.collection = collection;
@@ -59,6 +58,39 @@ class DefaultCache extends Map {
         return cl;
     }
 
+    async find(query) {
+        const found = this.toArray().find(i => {
+            for (let q in query) {
+                if (i[q] !== query[q]) return false;
+            }
+            return true;
+        });
+        if (found) return found;
+        const entry = await this.collection.findOne(query);
+        if (!entry) return null;
+        const cl = new this.ObjectClass(this.collection, entry);
+        this.set(cl.id, cl);
+        return cl;
+    }
+
+    async filter(query) {
+        const found = this.toArray().filter(i => {
+            for (let q in query) {
+                if (i[q] !== query[q]) return false;
+            }
+            return true;
+        });
+        if (found.length) return found;
+        const entries = await this.collection.find(query);
+        const res = [];
+        entries.forEach(e => {
+            const cl = new this.ObjectClass(this.collection, e);
+            this.set(cl.id, cl);
+            res.push(cl);
+        })
+        return res;
+    }
+
     async has(id) {
         if (super.has(id)) return true;
         const entry = await this.collection.findOne({_id: id});
@@ -82,9 +114,6 @@ class DefaultCache extends Map {
         return this.collection.deleteOne({_id: id});
     }
 
-    filter(query) {
-      return this.collection.find(query);   
-    }
 
     async mapAll(mapFn, query = {}) {
         const all = await this.collection.find(query);

@@ -4,7 +4,9 @@ import Playerlist from "./Playerlist";
 
 export default function Dashboard(props) {
     return(
-        <Playerlist app={props.app} players={props.app.data.players}></Playerlist>
+        <React.Fragment>
+        <Playerlist app={props.app} players={props.data.players}></Playerlist>
         <hr></hr>
+        </React.Fragment>
     )
 }

@@ -21,8 +21,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function Input(props) {
     return React.createElement("input", { defaultValue: props.value || " ", className: "inputCh", onKeyUp: function onKeyUp(e) {
             if (e.keyCode === 13 || e.keyCode === 32) {
-                props.update(props.player.id, props._key, e.target.value);
+                props.update(props.player.id, props._key, e.target.value.replace(/\s+/g, ' ').trim());
             }
+        }, onBlur: function onBlur(e) {
+            props.update(props.player.id, props._key, e.target.value);
         } });
 }
 
@@ -50,8 +52,8 @@ function Player(props) {
     );
 }
 
-var PlayerList = function (_React$Component) {
-    _inherits(PlayerList, _React$Component);
+var PlayerList = function (_React$PureComponent) {
+    _inherits(PlayerList, _React$PureComponent);
 
     function PlayerList(props) {
         _classCallCheck(this, PlayerList);
@@ -88,7 +90,8 @@ var PlayerList = function (_React$Component) {
         }
 
         _this.state = {
-            cols: allProps
+            cols: allProps,
+            players: _this.props.players
         };
 
         return _this;
@@ -108,12 +111,12 @@ var PlayerList = function (_React$Component) {
                     "Players"
                 ),
                 React.createElement(_Table2.default, { addCol: this.addCol.bind(this), cols: this.state.cols, body: function body(sort) {
-                        if (!_this2.props.players.length) return [];
-                        var sample = _this2.props.players[0][sort[0]];
-                        if (!sort.length) return _this2.props.players.map(function (p, i) {
+                        if (!_this2.state.players.length) return [];
+                        var sample = _this2.state.players[0][sort[0]];
+                        if (!sort.length) return _this2.state.players.map(function (p, i) {
                             return React.createElement(Player, { allProps: _this2.state.cols, key: p.id, number: i + 1, player: p, update: _this2.update.bind(_this2) });
                         });
-                        return sortArr(sort[1], sort[0], _this2.props.players, isNaN(sample) ? "string" : "number").map(function (p, i) {
+                        return sortArr(sort[1], sort[0], _this2.state.players, isNaN(sample) ? "string" : "number").map(function (p, i) {
                             return React.createElement(Player, { key: p.id, allProps: _this2.state.cols, number: i + 1, player: p, update: _this2.update.bind(_this2) });
                         });
                     } }),
@@ -127,8 +130,7 @@ var PlayerList = function (_React$Component) {
     }, {
         key: "update",
         value: function update(player, key, val) {
-            this.props.app.update("players", player, key, val);
-            console.log(this.props.app.changes);
+            this.props.app.updatePlayer(player, key, val);
         }
     }, {
         key: "addCol",
@@ -141,7 +143,7 @@ var PlayerList = function (_React$Component) {
     }]);
 
     return PlayerList;
-}(React.Component);
+}(React.PureComponent);
 
 exports.default = PlayerList;
 
@@ -152,10 +154,10 @@ function sortArr(type, prop) {
 
     if (dataType === "string") {
         if (type === "asc") return arr.sort(function (a, b) {
-            return (a[prop] || "").localeCompare(b[prop]);
+            return (a[prop] ? a[prop].toString() : "").localeCompare(b[prop]);
         });
         return arr.sort(function (a, b) {
-            return (a[prop] || "").localeCompare(b[prop]);
+            return (a[prop] ? a[prop].toString() : "").localeCompare(b[prop]);
         }).reverse();
     } else if (dataType === "number") {
         if (type === "asc") return arr.sort(function (a, b) {

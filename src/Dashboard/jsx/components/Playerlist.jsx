@@ -4,8 +4,10 @@ import Table from "./Table";
 function Input(props) {
 return <input defaultValue={props.value || " "} className="inputCh" onKeyUp={e => {
             if (e.keyCode === 13 || e.keyCode === 32) {
-                props.update(props.player.id, props._key, e.target.value);
+                props.update(props.player.id, props._key, e.target.value.replace(/\s+/g,' ').trim());
             }
+}} onBlur={(e) => {
+    props.update(props.player.id, props._key, e.target.value);
 }}> 
 </input>;
 }
@@ -23,7 +25,7 @@ function Player(props) {
 }
 
 
-export default class PlayerList extends React.Component {
+export default class PlayerList extends React.PureComponent {
     constructor(props) {
         super(props);
 
@@ -36,7 +38,8 @@ export default class PlayerList extends React.Component {
         }
 
         this.state = {
-            cols: allProps
+            cols: allProps,
+            players: this.props.players
         }
 
     }
@@ -46,10 +49,10 @@ export default class PlayerList extends React.Component {
     <React.Fragment>
     <h className="header">Players</h>
     <Table addCol={this.addCol.bind(this)} cols={this.state.cols} body={(sort) => {
-        if (!this.props.players.length) return [];
-        const sample = this.props.players[0][sort[0]];
-        if (!sort.length) return this.props.players.map((p, i) => <Player allProps={this.state.cols} key={p.id} number={i+1} player={p} update={this.update.bind(this)}></Player>)
-        return sortArr(sort[1], sort[0], this.props.players, isNaN(sample) ? "string":"number").map((p, i) => <Player key={p.id} allProps={this.state.cols} number={i+1} player={p} update={this.update.bind(this)}></Player>)
+        if (!this.state.players.length) return [];
+        const sample = this.state.players[0][sort[0]];
+        if (!sort.length) return this.state.players.map((p, i) => <Player allProps={this.state.cols} key={p.id} number={i+1} player={p} update={this.update.bind(this)}></Player>)
+        return sortArr(sort[1], sort[0], this.state.players, isNaN(sample) ? "string":"number").map((p, i) => <Player key={p.id} allProps={this.state.cols} number={i+1} player={p} update={this.update.bind(this)}></Player>)
     }}>
     </Table>
     <p className="smoll">Create players using the bot on discord!</p>
@@ -58,8 +61,7 @@ export default class PlayerList extends React.Component {
 }
 
 update(player, key, val) {
-    this.props.app.update("players", player, key, val);
-    console.log(this.props.app.changes);
+    this.props.app.updatePlayer(player, key, val);
 }
 
 addCol(name) {
@@ -75,10 +77,10 @@ addCol(name) {
 function sortArr(type, prop, arr = [], dataType = "string") {
     if (dataType === "string") {
         if (type === "asc") return arr.sort((a, b) => {
-            return (a[prop] || "").localeCompare(b[prop]);
+            return (a[prop] ? a[prop].toString():"").localeCompare(b[prop]);
         });
         return arr.sort((a, b) => {
-            return (a[prop] || "").localeCompare(b[prop]);
+            return (a[prop] ? a[prop].toString():"").localeCompare(b[prop]);
         }).reverse();
     }else if (dataType === "number") {
         if (type === "asc") return arr.sort((a, b) => a[prop] - b[prop]);

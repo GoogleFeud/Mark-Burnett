@@ -753,8 +753,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function Input(props) {
     return React.createElement("input", { defaultValue: props.value || " ", className: "inputCh", onKeyUp: function onKeyUp(e) {
             if (e.keyCode === 13 || e.keyCode === 32) {
-                props.update(props.player.id, props._key, e.target.value);
+                props.update(props.player.id, props._key, e.target.value.replace(/\s+/g, ' ').trim());
             }
+        }, onBlur: function onBlur(e) {
+            props.update(props.player.id, props._key, e.target.value);
         } });
 }
 
@@ -782,8 +784,8 @@ function Player(props) {
     );
 }
 
-var PlayerList = function (_React$Component) {
-    _inherits(PlayerList, _React$Component);
+var PlayerList = function (_React$PureComponent) {
+    _inherits(PlayerList, _React$PureComponent);
 
     function PlayerList(props) {
         _classCallCheck(this, PlayerList);
@@ -820,7 +822,8 @@ var PlayerList = function (_React$Component) {
         }
 
         _this.state = {
-            cols: allProps
+            cols: allProps,
+            players: _this.props.players
         };
 
         return _this;
@@ -840,12 +843,12 @@ var PlayerList = function (_React$Component) {
                     "Players"
                 ),
                 React.createElement(_Table2.default, { addCol: this.addCol.bind(this), cols: this.state.cols, body: function body(sort) {
-                        if (!_this2.props.players.length) return [];
-                        var sample = _this2.props.players[0][sort[0]];
-                        if (!sort.length) return _this2.props.players.map(function (p, i) {
+                        if (!_this2.state.players.length) return [];
+                        var sample = _this2.state.players[0][sort[0]];
+                        if (!sort.length) return _this2.state.players.map(function (p, i) {
                             return React.createElement(Player, { allProps: _this2.state.cols, key: p.id, number: i + 1, player: p, update: _this2.update.bind(_this2) });
                         });
-                        return sortArr(sort[1], sort[0], _this2.props.players, isNaN(sample) ? "string" : "number").map(function (p, i) {
+                        return sortArr(sort[1], sort[0], _this2.state.players, isNaN(sample) ? "string" : "number").map(function (p, i) {
                             return React.createElement(Player, { key: p.id, allProps: _this2.state.cols, number: i + 1, player: p, update: _this2.update.bind(_this2) });
                         });
                     } }),
@@ -859,8 +862,7 @@ var PlayerList = function (_React$Component) {
     }, {
         key: "update",
         value: function update(player, key, val) {
-            this.props.app.update("players", player, key, val);
-            console.log(this.props.app.changes);
+            this.props.app.updatePlayer(player, key, val);
         }
     }, {
         key: "addCol",
@@ -873,7 +875,7 @@ var PlayerList = function (_React$Component) {
     }]);
 
     return PlayerList;
-}(React.Component);
+}(React.PureComponent);
 
 exports.default = PlayerList;
 
@@ -884,10 +886,10 @@ function sortArr(type, prop) {
 
     if (dataType === "string") {
         if (type === "asc") return arr.sort(function (a, b) {
-            return (a[prop] || "").localeCompare(b[prop]);
+            return (a[prop] ? a[prop].toString() : "").localeCompare(b[prop]);
         });
         return arr.sort(function (a, b) {
-            return (a[prop] || "").localeCompare(b[prop]);
+            return (a[prop] ? a[prop].toString() : "").localeCompare(b[prop]);
         }).reverse();
     } else if (dataType === "number") {
         if (type === "asc") return arr.sort(function (a, b) {
@@ -1005,7 +1007,12 @@ var _Playerlist2 = _interopRequireDefault(_Playerlist);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function Dashboard(props) {
-    return React.createElement(_Playerlist2.default, { app: props.app, players: props.app.data.players });
+    return React.createElement(
+        React.Fragment,
+        null,
+        React.createElement(_Playerlist2.default, { app: props.app, players: props.data.players }),
+        React.createElement("hr", null)
+    );
 }
 },{"./Playerlist":2}],5:[function(require,module,exports){
 "use strict";
@@ -1146,11 +1153,23 @@ var App = function (_React$Component) {
 
         var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
+        var save = localStorage.getItem("save");
+        if (save) {
+            _this.get("api/saves/" + save).then(function (saveFile) {
+                if (saveFile.err) {
+                    save = null;
+                    _this.setState({ saveChosen: null });
+                    window.alert(saveFile.err);
+                } else {
+                    console.log(saveFile);
+                    _this.setState({ data: saveFile });
+                }
+            });
+        }
         _this.state = {
-            saveChosen: null
+            saveChosen: save,
+            data: { players: [] }
         };
-        _this.data;
-        _this.changes = { players: {}, tribes: {}, locations: {} }; // {players: [{id: someId, changes: {key: val} }] }
         return _this;
     }
 
@@ -1158,16 +1177,16 @@ var App = function (_React$Component) {
         key: "render",
         value: function render() {
             if (!this.state.saveChosen) {
-                return React.createElement(_saveEnter2.default, { app: this });
+                return React.createElement(_saveEnter2.default, { app: this, data: this.state.data });
             } else {
-                return React.createElement(_dashboard2.default, { app: this });
+                return React.createElement(_dashboard2.default, { app: this, data: this.state.data });
             }
         }
     }, {
         key: "setSaveFile",
         value: function setSaveFile(file) {
-            this.data = file;
-            this.setState({ saveChosen: file.save });
+            localStorage.setItem("save", file.save.id);
+            this.setState({ saveChosen: file.save, data: file });
         }
     }, {
         key: "get",
@@ -1218,23 +1237,24 @@ var App = function (_React$Component) {
                         switch (_context2.prev = _context2.next) {
                             case 0:
                                 Object.assign(data, { method: "POST" });
-                                _context2.next = 3;
+                                if (!data.headers) data.headers = { "Content-Type": "application/json" };
+                                _context2.next = 4;
                                 return fetch(endpoint, data);
 
-                            case 3:
+                            case 4:
                                 res = _context2.sent;
 
                                 if (res.ok) {
-                                    _context2.next = 6;
+                                    _context2.next = 7;
                                     break;
                                 }
 
                                 return _context2.abrupt("return", { err: res.statusText });
 
-                            case 6:
+                            case 7:
                                 return _context2.abrupt("return", res.json());
 
-                            case 7:
+                            case 8:
                             case "end":
                                 return _context2.stop();
                         }
@@ -1258,23 +1278,24 @@ var App = function (_React$Component) {
                         switch (_context3.prev = _context3.next) {
                             case 0:
                                 Object.assign(data, { method: "DELETE" });
-                                _context3.next = 3;
+                                if (!data.headers) data.headers = { "Content-Type": "application/json" };
+                                _context3.next = 4;
                                 return fetch(endpoint, data);
 
-                            case 3:
+                            case 4:
                                 res = _context3.sent;
 
                                 if (res.ok) {
-                                    _context3.next = 6;
+                                    _context3.next = 7;
                                     break;
                                 }
 
                                 return _context3.abrupt("return", { err: res.statusText });
 
-                            case 6:
+                            case 7:
                                 return _context3.abrupt("return", res.json());
 
-                            case 7:
+                            case 8:
                             case "end":
                                 return _context3.stop();
                         }
@@ -1298,23 +1319,24 @@ var App = function (_React$Component) {
                         switch (_context4.prev = _context4.next) {
                             case 0:
                                 Object.assign(data, { method: "PATCH" });
-                                _context4.next = 3;
+                                if (!data.headers) data.headers = { "Content-Type": "application/json" };
+                                _context4.next = 4;
                                 return fetch(endpoint, data);
 
-                            case 3:
+                            case 4:
                                 res = _context4.sent;
 
                                 if (res.ok) {
-                                    _context4.next = 6;
+                                    _context4.next = 7;
                                     break;
                                 }
 
                                 return _context4.abrupt("return", { err: res.statusText });
 
-                            case 6:
+                            case 7:
                                 return _context4.abrupt("return", res.json());
 
-                            case 7:
+                            case 8:
                             case "end":
                                 return _context4.stop();
                         }
@@ -1329,9 +1351,14 @@ var App = function (_React$Component) {
             return patch;
         }()
     }, {
-        key: "update",
-        value: function update(objectType, id, key, value) {
-            if (this.changes[objectType][id]) this.changes[objectType][id][key] = value;else this.changes[objectType][id] = _defineProperty({}, key, value);
+        key: "updatePlayer",
+        value: function updatePlayer(id, key, value) {
+            if (!isNaN(value)) value = Number.parseFloat(value);
+            this.setState(function (prev) {
+                if (prev.players && prev.players[id]) prev.players[id][key] = value;
+                return prev;
+            });
+            return this.patch("/api/saves/" + this.state.saveChosen + "/players/" + id, { body: JSON.stringify(_defineProperty({}, key, value)) });
         }
     }]);
 

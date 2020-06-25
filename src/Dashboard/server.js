@@ -27,9 +27,11 @@ if (!db) {
    db = new Database();
    master = false;
 }
-
-App.use(Express.json());
 App.use(Express.static(`${__dirname}/static`))
+
+
+App.use(Express.urlencoded({ extended: false }));
+App.use(Express.json());
 
 App.get("/", (req, res) => {
    res.sendFile(`${__dirname}/index.html`);
@@ -44,6 +46,12 @@ App.get("/api/saves/:saveId", async (req, res) => {
       tribes: await db.tribes.mapAll(t => t.serialize(), {saveId: req.params.saveId}),
       locations: await db.locations.mapAll(l => l.serialize(), {saveId: req.params.saveId})
    });
+});
+
+App.patch("/api/saves/:saveId/players/:playerId", async (req, res) => {
+     console.log(req.body);
+     await db.players.update(req.params.playerId, req.body);
+     res.json(req.body);
 });
 
 /**App.get("/api/:saveId/players", (req, res) => {

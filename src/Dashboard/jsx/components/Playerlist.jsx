@@ -25,7 +25,7 @@ function Player(props) {
 }
 
 
-export default class PlayerList extends React.PureComponent {
+export default class PlayerList extends React.Component {
     constructor(props) {
         super(props);
 
@@ -43,6 +43,20 @@ export default class PlayerList extends React.PureComponent {
         }
 
     }
+
+    componentDidUpdate(prevProps) {
+        if (!deepCompareArrayOfSimilarObjects(prevProps.players, this.props.players)) {
+            const allProps = [];
+            for (let player of this.props.players) {
+                for (let key in player) {
+                    if (key === "saveId") continue;
+                    if (!allProps.includes(key)) allProps.push(key);
+                }
+            }
+            this.setState({players: this.props.players, cols: allProps});
+        }
+    }
+
 
     render() {
     return(
@@ -86,4 +100,9 @@ function sortArr(type, prop, arr = [], dataType = "string") {
         if (type === "asc") return arr.sort((a, b) => a[prop] - b[prop]);
         return arr.sort((a, b) => b[prop] - a[prop]);
     }
+}
+
+
+function deepCompareArrayOfSimilarObjects(arr1, arr2) {
+    return JSON.stringify(arr1) === JSON.stringify(arr2);
 }

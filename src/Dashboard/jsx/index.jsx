@@ -14,7 +14,6 @@ class App extends React.Component {
                     this.setState({saveChosen: null});
                     window.alert(saveFile.err);
                 }else {
-                    console.log(saveFile);
                     this.setState({data: saveFile});
                 }
             });
@@ -68,12 +67,20 @@ class App extends React.Component {
         return res.json();
     }
 
+    resolveValue(val) {
+        if (!isNaN(val)) return Number.parseFloat(val);
+        if (val === "true") return true;
+        if (val === "false") return false;
+        if (val === "null" || val === "undefined") return null;
+        return val;
+    }
+
     updatePlayer(id, key, value) {
-        if (!isNaN(value)) value = Number.parseFloat(value);
+        value = this.resolveValue(value);
         this.setState(prev => {
-            if (prev.players && prev.players[id]) prev.players[id][key] = value;
+            if (prev.data && prev.data.players && prev.data.players.some(p => p.id === id)) prev.data.players.find(p => p.id === id)[key] = value;
             return prev;
-        })
+        });
         return this.patch(`/api/saves/${this.state.saveChosen}/players/${id}`, {body: JSON.stringify({[key]: value})});
     }
 

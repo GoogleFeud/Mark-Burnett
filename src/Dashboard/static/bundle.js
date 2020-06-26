@@ -751,11 +751,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 function Input(props) {
-    return React.createElement("input", { defaultValue: props.value || " ", className: "inputCh", onKeyUp: function onKeyUp(e) {
-            if (e.keyCode === 13 || e.keyCode === 32) {
-                props.update(props.player.id, props._key, e.target.value.replace(/\s+/g, ' ').trim());
-            }
-        }, onBlur: function onBlur(e) {
+    return React.createElement("input", { defaultValue: props.value || " ", className: "inputCh", onBlur: function onBlur(e) {
+            if (props.player[props._key] == e.target.value) return;
             props.update(props.player.id, props._key, e.target.value);
         } });
 }
@@ -832,6 +829,8 @@ var PlayerList = function (_React$Component) {
     _createClass(PlayerList, [{
         key: "componentDidUpdate",
         value: function componentDidUpdate(prevProps) {
+            console.log("Previous:", prevProps);
+            console.log("New", this.props);
             if (prevProps.players.length !== this.props.players.length) {
                 //deepCompareArrayOfSimilarObjects(prevProps.players, this.props.players)
                 var _allProps = [];
@@ -1202,7 +1201,6 @@ var App = function (_React$Component) {
                     _this.setState({ saveChosen: null });
                     window.alert(saveFile.err);
                 } else {
-                    console.log(saveFile);
                     _this.setState({ data: saveFile });
                 }
             });
@@ -1392,11 +1390,24 @@ var App = function (_React$Component) {
             return patch;
         }()
     }, {
+        key: "resolveValue",
+        value: function resolveValue(val) {
+            if (!isNaN(val)) return Number.parseFloat(val);
+            if (val === "true") return true;
+            if (val === "false") return false;
+            if (val === "null" || val === "undefined") return null;
+            return val;
+        }
+    }, {
         key: "updatePlayer",
         value: function updatePlayer(id, key, value) {
-            if (!isNaN(value)) value = Number.parseFloat(value);
+            value = this.resolveValue(value);
             this.setState(function (prev) {
-                if (prev.players && prev.players[id]) prev.players[id][key] = value;
+                if (prev.data && prev.data.players && prev.data.players.some(function (p) {
+                    return p.id === id;
+                })) prev.data.players.find(function (p) {
+                    return p.id === id;
+                })[key] = value;
                 return prev;
             });
             return this.patch("/api/saves/" + this.state.saveChosen + "/players/" + id, { body: JSON.stringify(_defineProperty({}, key, value)) });

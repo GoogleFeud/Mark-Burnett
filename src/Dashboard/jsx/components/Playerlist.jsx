@@ -2,13 +2,11 @@
 import Table from "./Table";
 
 function Input(props) {
-return <input defaultValue={props.value || " "} className="inputCh" onKeyUp={e => {
-            if (e.keyCode === 13 || e.keyCode === 32) {
-                props.update(props.player.id, props._key, e.target.value.replace(/\s+/g,' ').trim());
-            }
-}} onBlur={(e) => {
-    props.update(props.player.id, props._key, e.target.value);
-}}> 
+return <input defaultValue={props.value || " "} className="inputCh" onBlur={
+    (e) => {
+        if (props.player[props._key] == e.target.value) return;
+        props.update(props.player.id, props._key, e.target.value)
+    }}>
 </input>;
 }
 
@@ -45,6 +43,8 @@ export default class PlayerList extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
+        console.log("Previous:", prevProps);
+        console.log("New", this.props);
         if (prevProps.players.length !== this.props.players.length) { //deepCompareArrayOfSimilarObjects(prevProps.players, this.props.players)
             const allProps = [];
             for (let player of this.props.players) {

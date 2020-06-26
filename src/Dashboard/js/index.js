@@ -40,7 +40,6 @@ var App = function (_React$Component) {
                     _this.setState({ saveChosen: null });
                     window.alert(saveFile.err);
                 } else {
-                    console.log(saveFile);
                     _this.setState({ data: saveFile });
                 }
             });
@@ -230,11 +229,24 @@ var App = function (_React$Component) {
             return patch;
         }()
     }, {
+        key: "resolveValue",
+        value: function resolveValue(val) {
+            if (!isNaN(val)) return Number.parseFloat(val);
+            if (val === "true") return true;
+            if (val === "false") return false;
+            if (val === "null" || val === "undefined") return null;
+            return val;
+        }
+    }, {
         key: "updatePlayer",
         value: function updatePlayer(id, key, value) {
-            if (!isNaN(value)) value = Number.parseFloat(value);
+            value = this.resolveValue(value);
             this.setState(function (prev) {
-                if (prev.players && prev.players[id]) prev.players[id][key] = value;
+                if (prev.data && prev.data.players && prev.data.players.some(function (p) {
+                    return p.id === id;
+                })) prev.data.players.find(function (p) {
+                    return p.id === id;
+                })[key] = value;
                 return prev;
             });
             return this.patch("/api/saves/" + this.state.saveChosen + "/players/" + id, { body: JSON.stringify(_defineProperty({}, key, value)) });

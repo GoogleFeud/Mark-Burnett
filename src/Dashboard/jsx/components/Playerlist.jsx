@@ -45,7 +45,7 @@ export default class PlayerList extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (!deepCompareArrayOfSimilarObjects(prevProps.players, this.props.players)) {
+        if (prevProps.players.length !== this.props.players.length) { //deepCompareArrayOfSimilarObjects(prevProps.players, this.props.players)
             const allProps = [];
             for (let player of this.props.players) {
                 for (let key in player) {

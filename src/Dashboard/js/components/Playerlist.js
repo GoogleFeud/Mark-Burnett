@@ -100,7 +100,8 @@ var PlayerList = function (_React$Component) {
     _createClass(PlayerList, [{
         key: "componentDidUpdate",
         value: function componentDidUpdate(prevProps) {
-            if (!deepCompareArrayOfSimilarObjects(prevProps.players, this.props.players)) {
+            if (prevProps.players.length !== this.props.players.length) {
+                //deepCompareArrayOfSimilarObjects(prevProps.players, this.props.players)
                 var _allProps = [];
                 var _iteratorNormalCompletion2 = true;
                 var _didIteratorError2 = false;

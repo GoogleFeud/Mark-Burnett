@@ -115,15 +115,7 @@ class DefaultCache extends Map {
         this._valCache = null;
         return this.collection.deleteOne({_id: id});
     }
-
-    deleteMany(query) {
-        for (let querykey in query) {
-
-        }
-        for (let [key, v] in this) {
-            
-        }
-    }
+    
 
     async mapAll(mapFn, query = {}) {
         const all = await this.collection.find(query);

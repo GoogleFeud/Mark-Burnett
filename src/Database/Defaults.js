@@ -116,6 +116,16 @@ class DefaultCache extends Map {
         return this.collection.updateOne({_id: id}, {$set: data});
     }
 
+    removeField(fieldName, query) {
+        for (let [, val] of this) {
+            if (query) {
+                if (DefaultCache.matchesQuery(val, query)) delete val[fieldName];
+            }
+            else delete val[fieldName];
+        }
+        return this.collection.update(query || {}, {$unset: {[fieldName]: 1}} , {multi: true});
+    }
+
     delete(id) {
         super.delete(id);
         this._valCache = null;
@@ -142,6 +152,13 @@ class DefaultCache extends Map {
     toArray() {
         if (!this._valCache) this._valCache = [...this.values()];
         return this._valCache;
+    }
+
+    static matchesQuery(obj, query) {
+        for (let key in query) {
+            if (obj[key] != query[key]) return false;
+        }
+        return true;
     }
 
 

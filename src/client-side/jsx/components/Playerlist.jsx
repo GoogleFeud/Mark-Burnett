@@ -43,8 +43,6 @@ export default class PlayerList extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        console.log("Previous:", prevProps);
-        console.log("New", this.props);
         if (prevProps.players.length !== this.props.players.length) { //deepCompareArrayOfSimilarObjects(prevProps.players, this.props.players)
             const allProps = [];
             for (let player of this.props.players) {
@@ -62,7 +60,15 @@ export default class PlayerList extends React.Component {
     return(
     <React.Fragment>
     <h className="header">Players</h>
-    <Table addCol={this.addCol.bind(this)} cols={this.state.cols} body={(sort) => {
+    <Table context={[
+        {name: "Delete", action: (colName) => {
+            this.props.app.removeField("players", colName);
+            this.setState((prev) => {
+                prev.cols.splice(prev.cols.indexOf(colName), 1);
+                return prev;
+            })
+        }}
+    ]} addCol={this.addCol.bind(this)} cols={this.state.cols} body={(sort) => {
         if (!this.state.players.length) return [];
         const sample = this.state.players[0][sort[0]];
         if (!sort.length) return this.state.players.map((p, i) => <Player allProps={this.state.cols} key={p.id} number={i+1} player={p} update={this.update.bind(this)}></Player>)

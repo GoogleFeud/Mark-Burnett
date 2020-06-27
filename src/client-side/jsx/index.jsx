@@ -25,7 +25,7 @@ class App extends React.Component {
      }
 
      componentDidMount() {
-         const url = window.location.href.replace(window.location.port, "").replace(window.location.protocol, "ws")
+      /**    const url = window.location.href.replace(window.location.port, "").replace(window.location.protocol, "ws")
          this.socket = new WebSocket(window.location.href.replace(/http|https/, "ws") + "ws");
          this.socket.onmessage = (data) => {
                  data = JSON.parse(data);
@@ -40,7 +40,7 @@ class App extends React.Component {
                         });
                      }
                  }
-        }
+        } **/
      }
 
     render() {
@@ -62,7 +62,7 @@ class App extends React.Component {
         return res.json()
     }
 
-    async post(endpoint, data) {
+    async post(endpoint, data = {}) {
         Object.assign(data, {method: "POST"});
         if (!data.headers) data.headers = {"Content-Type": "application/json"}
         const res = await fetch(endpoint, data);
@@ -70,7 +70,7 @@ class App extends React.Component {
         return res.json();
     }
 
-    async delete(endpoint, data) {
+    async delete(endpoint, data = {}) {
         Object.assign(data, {method: "DELETE"});
         if (!data.headers) data.headers = {"Content-Type": "application/json"}
         const res = await fetch(endpoint, data);
@@ -78,7 +78,7 @@ class App extends React.Component {
         return res.json();
     }
 
-    async patch(endpoint, data) {
+    async patch(endpoint, data = {}) {
         Object.assign(data, {method: "PATCH"});
         if (!data.headers) data.headers = {"Content-Type": "application/json"}
         const res = await fetch(endpoint, data);
@@ -101,6 +101,11 @@ class App extends React.Component {
             return prev;
         });
         if (internal) return this.patch(`/api/saves/${this.state.saveChosen}/players/${id}`, {body: JSON.stringify({[key]: value})});
+    }
+
+    removeField(collection, fieldName) {
+        console.log(collection, fieldName);
+        return this.delete(`/api/saves/${this.state.saveChosen}/${collection}/${fieldName}`);
     }
 
 }

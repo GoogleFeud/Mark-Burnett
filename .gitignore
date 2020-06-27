@@ -12,4 +12,6 @@ src/Database/mongodb
 
 # Compiled Javascript code
 
-src/Dashboard/static/bundle.js
+src/client-side/js
+
+src/client-side/static/bundle.js

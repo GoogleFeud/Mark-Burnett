@@ -54,29 +54,22 @@ var App = function (_React$Component) {
     _createClass(App, [{
         key: "componentDidMount",
         value: function componentDidMount() {
-            var _this2 = this;
-
-            var url = window.location.href.replace(window.location.port, "").replace(window.location.protocol, "ws");
-            this.socket = new WebSocket(window.location.href.replace(/http|https/, "ws") + "ws");
-            this.socket.onmessage = function (data) {
-                data = JSON.parse(data);
-                switch (data.e) {
-                    case "playerUpdate":
-                        {
-                            if (_this2.state.data.players.some(function (p) {
-                                return p.id === data.id;
-                            })) _this2.setState(function (prev) {
-                                var p = prev.data.players.find(function (p) {
-                                    return p.id === id;
-                                });
-                                for (var key in data.c) {
-                                    p[key] = data.c[key];
-                                }
-                                return prev;
-                            });
-                        }
-                }
-            };
+            /**    const url = window.location.href.replace(window.location.port, "").replace(window.location.protocol, "ws")
+               this.socket = new WebSocket(window.location.href.replace(/http|https/, "ws") + "ws");
+               this.socket.onmessage = (data) => {
+                       data = JSON.parse(data);
+                       switch(data.e) {
+                           case "playerUpdate": {
+                              if (this.state.data.players.some(p => p.id === data.id)) this.setState(prev => {
+                                  const p = prev.data.players.find(p => p.id === id);
+                                  for (let key in data.c) {
+                                      p[key] = data.c[key];
+                                  }
+                                  return prev;
+                              });
+                           }
+                       }
+              } **/
         }
     }, {
         key: "render",
@@ -135,7 +128,8 @@ var App = function (_React$Component) {
     }, {
         key: "post",
         value: function () {
-            var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(endpoint, data) {
+            var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(endpoint) {
+                var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
                 var res;
                 return regeneratorRuntime.wrap(function _callee2$(_context2) {
                     while (1) {
@@ -167,7 +161,7 @@ var App = function (_React$Component) {
                 }, _callee2, this);
             }));
 
-            function post(_x2, _x3) {
+            function post(_x3) {
                 return _ref2.apply(this, arguments);
             }
 
@@ -176,7 +170,8 @@ var App = function (_React$Component) {
     }, {
         key: "delete",
         value: function () {
-            var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(endpoint, data) {
+            var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(endpoint) {
+                var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
                 var res;
                 return regeneratorRuntime.wrap(function _callee3$(_context3) {
                     while (1) {
@@ -208,7 +203,7 @@ var App = function (_React$Component) {
                 }, _callee3, this);
             }));
 
-            function _delete(_x4, _x5) {
+            function _delete(_x5) {
                 return _ref3.apply(this, arguments);
             }
 
@@ -217,7 +212,8 @@ var App = function (_React$Component) {
     }, {
         key: "patch",
         value: function () {
-            var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(endpoint, data) {
+            var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(endpoint) {
+                var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
                 var res;
                 return regeneratorRuntime.wrap(function _callee4$(_context4) {
                     while (1) {
@@ -249,7 +245,7 @@ var App = function (_React$Component) {
                 }, _callee4, this);
             }));
 
-            function patch(_x6, _x7) {
+            function patch(_x7) {
                 return _ref4.apply(this, arguments);
             }
 
@@ -279,6 +275,12 @@ var App = function (_React$Component) {
                 return prev;
             });
             if (internal) return this.patch("/api/saves/" + this.state.saveChosen + "/players/" + id, { body: JSON.stringify(_defineProperty({}, key, value)) });
+        }
+    }, {
+        key: "removeField",
+        value: function removeField(collection, fieldName) {
+            console.log(collection, fieldName);
+            return this.delete("/api/saves/" + this.state.saveChosen + "/" + collection + "/" + fieldName);
         }
     }]);
 

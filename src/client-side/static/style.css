@@ -37,3 +37,31 @@ body {
     font-size: 14px;
     color: grey;
 }
+
+.ontop {
+    z-index: 99;
+}
+
+.dropdown {
+    display: block;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    padding: 4px 4px;
+    z-index: 1;
+}
+
+.dropdown-btn {
+    border: none;
+    position: absolute;
+    font-size: 14px;
+    width: 100%;
+    background-color: transparent;
+    transition: background-color 1s linear;
+}
+
+.dropdown-btn:hover {
+    border: none;
+    background-color: lightgrey; 
+}

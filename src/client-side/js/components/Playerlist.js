@@ -97,8 +97,6 @@ var PlayerList = function (_React$Component) {
     _createClass(PlayerList, [{
         key: "componentDidUpdate",
         value: function componentDidUpdate(prevProps) {
-            console.log("Previous:", prevProps);
-            console.log("New", this.props);
             if (prevProps.players.length !== this.props.players.length) {
                 //deepCompareArrayOfSimilarObjects(prevProps.players, this.props.players)
                 var _allProps = [];
@@ -146,7 +144,13 @@ var PlayerList = function (_React$Component) {
                     { className: "header" },
                     "Players"
                 ),
-                React.createElement(_Table2.default, { addCol: this.addCol.bind(this), cols: this.state.cols, body: function body(sort) {
+                React.createElement(_Table2.default, { context: [{ name: "Delete", action: function action(colName) {
+                            _this2.props.app.removeField("players", colName);
+                            _this2.setState(function (prev) {
+                                prev.cols.splice(prev.cols.indexOf(colName), 1);
+                                return prev;
+                            });
+                        } }], addCol: this.addCol.bind(this), cols: this.state.cols, body: function body(sort) {
                         if (!_this2.state.players.length) return [];
                         var sample = _this2.state.players[0][sort[0]];
                         if (!sort.length) return _this2.state.players.map(function (p, i) {

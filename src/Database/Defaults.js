@@ -34,6 +34,8 @@ class DefaultObject {
 
 }
 
+
+
 class DefaultCache extends Map {
     constructor(collection, ObjClass) {
         super();
@@ -114,6 +116,14 @@ class DefaultCache extends Map {
         return this.collection.deleteOne({_id: id});
     }
 
+    deleteMany(query) {
+        for (let querykey in query) {
+
+        }
+        for (let [key, v] in this) {
+            
+        }
+    }
 
     async mapAll(mapFn, query = {}) {
         const all = await this.collection.find(query);
@@ -136,8 +146,8 @@ class DefaultCache extends Map {
         return this._valCache;
     }
 
-
-}
+ 
+}  
 
 module.exports = {
     DefaultObject,

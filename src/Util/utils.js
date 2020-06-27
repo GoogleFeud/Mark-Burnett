@@ -18,6 +18,14 @@ function rngBtw(min, max) {
     return Math.floor(Math.random() * (max - min +1)) + min;
 }
 
+function rngId(length = 3) {
+    let str = "";
+    for (let i=0; i < length; i++) {
+        str + rngBtw(1, 9);
+    }
+    return str;
+}
+
 class Bitfield {
     constructor(...bits) {
         this.bits = bits.reduce((a, b) => a | b, 0);
@@ -36,5 +44,6 @@ class Bitfield {
 module.exports = {
     getFilesFromDir,
     rngBtw,
-    Bitfield
+    Bitfield,
+    rngId
 }

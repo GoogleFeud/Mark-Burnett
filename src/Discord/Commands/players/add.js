@@ -1,5 +1,4 @@
 
-const Settings = require("../../../../settings.json");
 const Nakamura = require("nakamura").Util;
 const Util = require("../../../Util/utils.js");
 
@@ -11,11 +10,11 @@ module.exports = {
         const guild = await client.db.guilds.get(message.guild_id);
         for (let user of message.mentions) {
             await client.db.players.create({_id: user.id + guild.saveId, name: user.member.nickname || user.username, saveId: guild.saveId});
-            if (Settings.botSettings.confessionalCategoryId) {
+            if (client.settings.botSettings && client.settings.botSettings.confessionalCategoryId) {
                 client.createGuildChannel(message.guild_id, {
                     name: user.username,
                     type: 0, // Text
-                    parent_id: Settings.botSettings.confessionalCategoryId,
+                    parent_id: client.settings.botSettings.confessionalCategoryId,
                     permission_overwrites: [
                         {type: "member", id: user.id, allow: allowBits},
                         {type: "role", id: message.guild_id, deny: denyBits}

@@ -1,13 +1,13 @@
 
 const Nakamura = require("nakamura");
-const Settings = require("../../../settings.json");
 const Utils = require("../../Util/utils.js");
 
 class Client extends Nakamura.Client {
-  constructor(commandPath, eventPath, database) {
+  constructor(commandPath, eventPath, database, Settings) {
       super(Settings.token);
 
       this.commands = new Map();
+      this.settings = Settings;
       this.db = database;
 
       let files = Utils.getFilesFromDir(commandPath);

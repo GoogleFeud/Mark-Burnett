@@ -52,6 +52,33 @@ var App = function (_React$Component) {
     }
 
     _createClass(App, [{
+        key: "componentDidMount",
+        value: function componentDidMount() {
+            var _this2 = this;
+
+            var url = window.location.href.replace(window.location.port, "").replace(window.location.protocol, "ws");
+            this.socket = new WebSocket(window.location.href.replace(/http|https/, "ws") + "ws");
+            this.socket.onmessage = function (data) {
+                data = JSON.parse(data);
+                switch (data.e) {
+                    case "playerUpdate":
+                        {
+                            if (_this2.state.data.players.some(function (p) {
+                                return p.id === data.id;
+                            })) _this2.setState(function (prev) {
+                                var p = prev.data.players.find(function (p) {
+                                    return p.id === id;
+                                });
+                                for (var key in data.c) {
+                                    p[key] = data.c[key];
+                                }
+                                return prev;
+                            });
+                        }
+                }
+            };
+        }
+    }, {
         key: "render",
         value: function render() {
             if (!this.state.saveChosen) {
@@ -240,6 +267,8 @@ var App = function (_React$Component) {
     }, {
         key: "updatePlayer",
         value: function updatePlayer(id, key, value) {
+            var internal = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+
             value = this.resolveValue(value);
             this.setState(function (prev) {
                 if (prev.data && prev.data.players && prev.data.players.some(function (p) {
@@ -249,7 +278,7 @@ var App = function (_React$Component) {
                 })[key] = value;
                 return prev;
             });
-            return this.patch("/api/saves/" + this.state.saveChosen + "/players/" + id, { body: JSON.stringify(_defineProperty({}, key, value)) });
+            if (internal) return this.patch("/api/saves/" + this.state.saveChosen + "/players/" + id, { body: JSON.stringify(_defineProperty({}, key, value)) });
         }
     }]);
 

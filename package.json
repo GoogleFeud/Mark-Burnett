@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Game of life discord bot",
   "main": "index.js",
+  "bin": "./bin",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,20 +12,22 @@
     "url": "git+https://github.com/GoogleFeud/Game-Of-Life.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "GoogleFeud",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/GoogleFeud/Game-Of-Life/issues"
   },
   "homepage": "https://github.com/GoogleFeud/Game-Of-Life#readme",
+  "pkg": {
+    "scripts": "src/server/*/*.js",
+    "assets": ["src/client-side/static/*", "src/client-side/index.html"]
+  },
   "dependencies": {
-    "erlpack": "^0.1.3",
-    "eventemitter3": "^4.0.4",
     "express": "^4.17.1",
     "form-data": "^3.0.0",
     "mongodb": "^3.5.8",
-    "nakamura": "github:GoogleFeud/Nakamura",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.0",
+    "ws": "^7.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.9.6",

@@ -49,6 +49,14 @@ class DefaultCache extends Map {
         return new this.ObjectClass(this.collection, data);
     }
 
+    cacheHas(key) {
+        return super.has(key);
+    }
+
+    cacheGet(key) {
+        return super.get(key);
+    }
+
     async get(id) {
         if (super.has(id)) return super.get(id);
         const entry = await this.collection.findOne({_id: id});

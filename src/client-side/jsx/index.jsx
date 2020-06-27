@@ -24,6 +24,25 @@ class App extends React.Component {
         }
      }
 
+     componentDidMount() {
+         const url = window.location.href.replace(window.location.port, "").replace(window.location.protocol, "ws")
+         this.socket = new WebSocket(window.location.href.replace(/http|https/, "ws") + "ws");
+         this.socket.onmessage = (data) => {
+                 data = JSON.parse(data);
+                 switch(data.e) {
+                     case "playerUpdate": {
+                        if (this.state.data.players.some(p => p.id === data.id)) this.setState(prev => {
+                            const p = prev.data.players.find(p => p.id === id);
+                            for (let key in data.c) {
+                                p[key] = data.c[key];
+                            }
+                            return prev;
+                        });
+                     }
+                 }
+        }
+     }
+
     render() {
         if (!this.state.saveChosen) {
             return <SaveEnter app={this} data={this.state.data}></SaveEnter>
@@ -75,13 +94,13 @@ class App extends React.Component {
         return val;
     }
 
-    updatePlayer(id, key, value) {
+    updatePlayer(id, key, value, internal = true) {
         value = this.resolveValue(value);
         this.setState(prev => {
             if (prev.data && prev.data.players && prev.data.players.some(p => p.id === id)) prev.data.players.find(p => p.id === id)[key] = value;
             return prev;
         });
-        return this.patch(`/api/saves/${this.state.saveChosen}/players/${id}`, {body: JSON.stringify({[key]: value})});
+        if (internal) return this.patch(`/api/saves/${this.state.saveChosen}/players/${id}`, {body: JSON.stringify({[key]: value})});
     }
 
 }

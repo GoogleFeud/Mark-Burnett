@@ -1,7 +1,7 @@
 
 const Default = require("../Defaults.js");
 
-module.exports = class User extends Default.DefaultObject {
+class User extends Default.DefaultObject {
     constructor(collection, data) {
         super(collection, data);
         this.saveId = data.saveId;
@@ -12,9 +12,11 @@ module.exports = class User extends Default.DefaultObject {
         this.lastLocationId = data.lastLocationId;
     }
 
-
-    static default = {
-        stamina: 0
-    }
     
 }
+
+User.default = {
+    stamina: 0
+}
+
+module.exports = User;

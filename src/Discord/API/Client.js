@@ -12,7 +12,7 @@ class Client extends Nakamura.Client {
 
       let files = Utils.getFilesFromDir(commandPath);
       for (let file of files) {
-          const fileObj = require(`../Commands/${file}`);
+          const fileObj = require(`${process.cwd()}/src/Discord/Commands/${file}`);
           const arr = file.split("/");
           if (arr.length === 3) fileObj.name = arr[1] + fileObj.name;
           this.commands.set(fileObj.name, fileObj);
@@ -20,7 +20,7 @@ class Client extends Nakamura.Client {
 
       files = Utils.getFilesFromDir(eventPath);
       for (let file of files) {
-          const fn = require(`../Events/${file}`);
+          const fn = require(`${process.cwd()}/src/Discord/Events/${file}`);
           this.events.on(file.replace(".js", "").replace("/", ""), fn.bind(this));
       }
 

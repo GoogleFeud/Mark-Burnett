@@ -1,9 +1,11 @@
 
+
 const Database = require("./src/Database/Database.js");
 const Client = require("./src/Discord/API/Client.js");
-const fs = require("fs");
+const readline = require('readline')
 
-const Settings = JSON.parse(fs.readFileSync("./settings.json", {encoding: "utf8"}));
+
+const Settings = require(`${process.cwd()}/settings.json`, "dynamic");
 
 
 if (!Settings.username || !Settings.password) {
@@ -21,3 +23,9 @@ else if (Settings.username && Settings.password) {
     bot.connect();
     module.exports = bot;
 }
+
+readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+})
+

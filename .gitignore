@@ -8,6 +8,10 @@ settings.json
 # Database Server
 src/Database/mongodb
 
+# PKG
+
+bin
+
 # Compiled Javascript code
 
 src/Dashboard/static/bundle.js

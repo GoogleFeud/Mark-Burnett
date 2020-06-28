@@ -1,5 +1,5 @@
 {
-  "name": "Game-Of-Life",
+  "name": "MarkBurnett",
   "version": "1.0.0",
   "description": "Game of life discord bot",
   "main": "index.js",
@@ -8,16 +8,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GoogleFeud/Game-Of-Life.git"
+    "url": "git+https://github.com/GoogleFeud/Mark-Burnett.git"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/GoogleFeud/Game-Of-Life/issues"
+    "url": "https://github.com/GoogleFeud/Mark-Burnett/issues"
   },
-  "homepage": "https://github.com/GoogleFeud/Game-Of-Life#readme",
-  "bin": "./bin",
+  "homepage": "https://github.com/GoogleFeud/Mark-Burnett#readme",
+  "bin": "./bot.js",
   "pkg": {
     "scripts": "src/Commands/*/*"
   },

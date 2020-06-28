@@ -60,6 +60,9 @@ export default class PlayerList extends React.Component {
     return(
     <React.Fragment>
     <h className="header">Players</h>
+    <button className="r-btn" onClick={
+        
+    }>Random</button>
     <Table context={[
         {name: "Delete", action: (colName) => {
             this.props.app.removeField("players", colName);

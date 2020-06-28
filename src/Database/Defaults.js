@@ -123,7 +123,7 @@ class DefaultCache extends Map {
             }
             else delete val[fieldName];
         }
-        return this.collection.update(query || {}, {$unset: {[fieldName]: 1}} , {multi: true});
+        return this.collection.updateMany(query || {}, {$unset: {[fieldName]: 1}} , {multi: true});
     }
 
     delete(id) {

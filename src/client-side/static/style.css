@@ -4,6 +4,10 @@ body {
     padding: 8px 8px 8px 8px;
 }
 
+button:focus {
+    outline: 0;
+}
+
 .saveBod {
     margin-top: 8%;
     text-align: center;
@@ -54,7 +58,6 @@ body {
 
 .dropdown-btn {
     border: none;
-    position: absolute;
     font-size: 14px;
     width: 100%;
     background-color: transparent;
@@ -65,3 +68,22 @@ body {
     border: none;
     background-color: lightgrey; 
 }
+
+.dropdown-btn:focus {
+    outline: 0;
+}
+
+.r-btn {
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border: none;
+    transition: background-color 1s linear;
+}
+
+.r-btn:focus {
+    border: none;
+    background-color: lightgrey;
+    outline: 0;
+}
+

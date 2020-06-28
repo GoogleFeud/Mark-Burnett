@@ -876,6 +876,11 @@ var PlayerList = function (_React$Component) {
                     { className: "header" },
                     "Players"
                 ),
+                React.createElement(
+                    "button",
+                    { className: "r-btn" },
+                    "Random"
+                ),
                 React.createElement(_Table2.default, { context: [{ name: "Delete", action: function action(colName) {
                             _this2.props.app.removeField("players", colName);
                             _this2.setState(function (prev) {

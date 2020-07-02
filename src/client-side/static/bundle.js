@@ -735,12 +735,32 @@ try {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.default = Input;
+function Input(props) {
+    return React.createElement("input", { defaultValue: props.value || " ", className: "inputCh", onBlur: function onBlur(e) {
+            props.receive(e);
+        } });
+}
+},{}],3:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _Table = require("./Table");
 
 var _Table2 = _interopRequireDefault(_Table);
+
+var _Input = require("./Input");
+
+var _Input2 = _interopRequireDefault(_Input);
+
+var _util = require("../util");
+
+var _util2 = _interopRequireDefault(_util);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -750,32 +770,20 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-function Input(props) {
-    return React.createElement("input", { defaultValue: props.value || " ", className: "inputCh", onBlur: function onBlur(e) {
-            if (props.player[props._key] == e.target.value) return;
-            props.update(props.player.id, props._key, e.target.value);
-        } });
-}
-
 function Player(props) {
     return React.createElement(
         "tr",
         null,
-        React.createElement(
-            "th",
-            { scope: "row" },
-            props.number
-        ),
         props.allProps.map(function (key) {
-            if (props.player[key] === null || props.player[key] === undefined) return React.createElement(
-                "td",
-                null,
-                React.createElement(Input, { player: props.player, _key: key, key: props.player.id, update: props.update })
-            );
+            var value = props.player[key];
+            if (value === null || value === undefined) value = undefined;
             return React.createElement(
                 "td",
                 null,
-                React.createElement(Input, { value: props.player[key], key: props.player.id, player: props.player, _key: key, update: props.update })
+                React.createElement(_Input2.default, { value: value, receive: function receive(e) {
+                        if (props.player[key] == e.target.value) return;
+                        props.update(props.player.id, key, e.target.value);
+                    } })
             );
         })
     );
@@ -878,7 +886,10 @@ var PlayerList = function (_React$Component) {
                 ),
                 React.createElement(
                     "button",
-                    { className: "r-btn" },
+                    { className: "r-btn", onClick: function onClick() {
+                            var rng = _this2.state.players[Math.floor(Math.random() * _this2.state.players.length)];
+                            window.alert("Name: " + rng.name + "\n\nId: " + rng.id);
+                        } },
                     "Random"
                 ),
                 React.createElement(_Table2.default, { context: [{ name: "Delete", action: function action(colName) {
@@ -893,7 +904,7 @@ var PlayerList = function (_React$Component) {
                         if (!sort.length) return _this2.state.players.map(function (p, i) {
                             return React.createElement(Player, { allProps: _this2.state.cols, key: p.id, number: i + 1, player: p, update: _this2.update.bind(_this2) });
                         });
-                        return sortArr(sort[1], sort[0], _this2.state.players, isNaN(sample) ? "string" : "number").map(function (p, i) {
+                        return _util2.default.sortArr(sort[1], sort[0], _this2.state.players, isNaN(sample) ? "string" : "number").map(function (p, i) {
                             return React.createElement(Player, { key: p.id, allProps: _this2.state.cols, number: i + 1, player: p, update: _this2.update.bind(_this2) });
                         });
                     } }),
@@ -923,33 +934,7 @@ var PlayerList = function (_React$Component) {
 }(React.Component);
 
 exports.default = PlayerList;
-
-
-function sortArr(type, prop) {
-    var arr = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-    var dataType = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "string";
-
-    if (dataType === "string") {
-        if (type === "asc") return arr.sort(function (a, b) {
-            return (a[prop] ? a[prop].toString() : "").localeCompare(b[prop]);
-        });
-        return arr.sort(function (a, b) {
-            return (a[prop] ? a[prop].toString() : "").localeCompare(b[prop]);
-        }).reverse();
-    } else if (dataType === "number") {
-        if (type === "asc") return arr.sort(function (a, b) {
-            return a[prop] - b[prop];
-        });
-        return arr.sort(function (a, b) {
-            return b[prop] - a[prop];
-        });
-    }
-}
-
-function deepCompareArrayOfSimilarObjects(arr1, arr2) {
-    return JSON.stringify(arr1) === JSON.stringify(arr2);
-}
-},{"./Table":3}],3:[function(require,module,exports){
+},{"../util":10,"./Input":2,"./Table":4}],4:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1017,7 +1002,7 @@ var Table = function (_React$Component) {
                     );
                 });
             }
-            s.push(React.createElement(
+            if (this.props.addCol) s.push(React.createElement(
                 "td",
                 { scope: "col" },
                 React.createElement("input", { defaultValue: "New", className: "inputCh", key: s.length + 1, onKeyUp: function onKeyUp(e) {
@@ -1028,7 +1013,19 @@ var Table = function (_React$Component) {
                     } })
             ));
             var p = this.props.body(this.state.sort);
-            p.push();
+            if (this.props.addRow) {
+                p.push(React.createElement(
+                    "tr",
+                    null,
+                    React.createElement(
+                        "th",
+                        { scope: "row", onClick: function onClick() {
+                                _this2.props.addRow();
+                            } },
+                        "New"
+                    )
+                ));
+            }
             return React.createElement(
                 React.Fragment,
                 null,
@@ -1041,18 +1038,13 @@ var Table = function (_React$Component) {
                         React.createElement(
                             "tr",
                             null,
-                            React.createElement(
-                                "th",
-                                { scope: "col" },
-                                "#"
-                            ),
                             s
                         )
                     ),
                     React.createElement(
                         "tbody",
                         null,
-                        this.props.body(this.state.sort)
+                        p
                     )
                 )
             );
@@ -1063,7 +1055,204 @@ var Table = function (_React$Component) {
 }(React.Component);
 
 exports.default = Table;
-},{"./contextMenu":4}],4:[function(require,module,exports){
+},{"./contextMenu":6}],5:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _Table = require("./Table");
+
+var _Table2 = _interopRequireDefault(_Table);
+
+var _util = require("../util");
+
+var _util2 = _interopRequireDefault(_util);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function Tribe(props) {
+    return React.createElement(
+        "tr",
+        null,
+        props.allProps.map(function (key) {
+            var value = props.tribe[key];
+            if (value === null || value === undefined) value = undefined;
+            return React.createElement(
+                "td",
+                null,
+                React.createElement(Input, { value: value, receive: function receive(e) {
+                        if (props.tribe[key] == e.target.value) return;
+                        props.update(props.tribe.id, key, e.target.value);
+                    } })
+            );
+        })
+    );
+}
+
+var TribeList = function (_React$Component) {
+    _inherits(TribeList, _React$Component);
+
+    function TribeList(props) {
+        _classCallCheck(this, TribeList);
+
+        var _this = _possibleConstructorReturn(this, (TribeList.__proto__ || Object.getPrototypeOf(TribeList)).call(this, props));
+
+        var allProps = [];
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+            for (var _iterator = _this.props.tribes[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                var tribe = _step.value;
+
+                for (var key in tribe) {
+                    if (key === "saveId") continue;
+                    if (!allProps.includes(key)) allProps.push(key);
+                }
+            }
+        } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion && _iterator.return) {
+                    _iterator.return();
+                }
+            } finally {
+                if (_didIteratorError) {
+                    throw _iteratorError;
+                }
+            }
+        }
+
+        _this.state = {
+            cols: allProps,
+            tribes: _this.props.tribes
+        };
+
+        return _this;
+    }
+
+    _createClass(TribeList, [{
+        key: "componentDidUpdate",
+        value: function componentDidUpdate(prevProps) {
+            if (prevProps.tribes.length !== this.props.tribes.length) {
+                var _allProps = [];
+                var _iteratorNormalCompletion2 = true;
+                var _didIteratorError2 = false;
+                var _iteratorError2 = undefined;
+
+                try {
+                    for (var _iterator2 = this.props.tribes[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                        var tribe = _step2.value;
+
+                        for (var key in tribe) {
+                            if (key === "saveId") continue;
+                            if (!_allProps.includes(key)) _allProps.push(key);
+                        }
+                    }
+                } catch (err) {
+                    _didIteratorError2 = true;
+                    _iteratorError2 = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                            _iterator2.return();
+                        }
+                    } finally {
+                        if (_didIteratorError2) {
+                            throw _iteratorError2;
+                        }
+                    }
+                }
+
+                this.setState({ tribes: this.props.tribes, cols: _allProps });
+            }
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            var _this2 = this;
+
+            return React.createElement(
+                React.Fragment,
+                null,
+                React.createElement(
+                    "h",
+                    { className: "header" },
+                    "Tribes"
+                ),
+                React.createElement(
+                    "button",
+                    { className: "r-btn", onClick: function onClick() {
+                            var rng = _this2.state.tribes[Math.floor(Math.random() * _this2.state.tribes.length)];
+                            window.alert("Name: " + rng.name + "\n\nId: " + rng.id);
+                        } },
+                    "Random"
+                ),
+                React.createElement(_Table2.default, { context: [{ name: "Delete", action: function action(colName) {
+                            _this2.props.app.removeField("tribes", colName);
+                            _this2.setState(function (prev) {
+                                prev.cols.splice(prev.cols.indexOf(colName), 1);
+                                return prev;
+                            });
+                        } }], addCol: this.addCol.bind(this), cols: this.state.cols, body: function body(sort) {
+                        if (!_this2.state.tribes.length) return [];
+                        var sample = _this2.state.tribes[0][sort[0]];
+                        if (!sort.length) return _this2.state.tribes.map(function (p, i) {
+                            return React.createElement(Tribe, { allProps: _this2.state.cols, key: p.id, number: i + 1, tribe: p, update: _this2.update.bind(_this2) });
+                        });
+                        return _util2.default.sortArr(sort[1], sort[0], _this2.state.tribes, isNaN(sample) ? "string" : "number").map(function (p, i) {
+                            return React.createElement(Tribe, { key: p.id, allProps: _this2.state.cols, number: i + 1, tribe: p, update: _this2.update.bind(_this2) });
+                        });
+                    }, addRow: function addRow() {
+                        _this2.addRow();
+                    } }),
+                React.createElement(
+                    "p",
+                    { className: "smoll" },
+                    "Create players using the bot on discord!"
+                )
+            );
+        }
+    }, {
+        key: "update",
+        value: function update(tribe, key, val) {
+            this.props.app.updateTribe(tribe, key, val);
+        }
+    }, {
+        key: "addRow",
+        value: function addRow() {
+            this.setState(function (prev) {
+                prev.tribes.push({ id: "tribe" + _util2.default.randomId() });
+            });
+        }
+    }, {
+        key: "addCol",
+        value: function addCol(name) {
+            this.setState(function (prev) {
+                prev.cols.push(name);
+                return prev;
+            });
+        }
+    }]);
+
+    return TribeList;
+}(React.Component);
+
+exports.default = TribeList;
+},{"../util":10,"./Table":4}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1141,7 +1330,7 @@ var ContextMenu = function (_React$Component) {
 }(React.Component);
 
 exports.default = ContextMenu;
-},{}],5:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1153,6 +1342,10 @@ var _Playerlist = require("./Playerlist");
 
 var _Playerlist2 = _interopRequireDefault(_Playerlist);
 
+var _Tribelist = require("./Tribelist");
+
+var _Tribelist2 = _interopRequireDefault(_Tribelist);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function Dashboard(props) {
@@ -1160,10 +1353,11 @@ function Dashboard(props) {
         React.Fragment,
         null,
         React.createElement(_Playerlist2.default, { app: props.app, players: props.data.players }),
+        React.createElement(_Tribelist2.default, { app: props.app, tribes: props.data.tribes || [] }),
         React.createElement("hr", null)
     );
 }
-},{"./Playerlist":2}],6:[function(require,module,exports){
+},{"./Playerlist":3,"./Tribelist":5}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1267,7 +1461,7 @@ var SaveEnter = function (_React$Component) {
 }(React.Component);
 
 exports.default = SaveEnter;
-},{}],7:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1528,7 +1722,7 @@ var App = function (_React$Component) {
             if (val === "true") return true;
             if (val === "false") return false;
             if (val === "null" || val === "undefined") return null;
-            return val;
+            return val.replace(/\s+/g, ' ').trim();
         }
     }, {
         key: "updatePlayer",
@@ -1549,7 +1743,6 @@ var App = function (_React$Component) {
     }, {
         key: "removeField",
         value: function removeField(collection, fieldName) {
-            console.log(collection, fieldName);
             return this.delete("/api/saves/" + this.state.saveChosen + "/" + collection + "/" + fieldName);
         }
     }]);
@@ -1560,4 +1753,46 @@ var App = function (_React$Component) {
 window.addEventListener("load", function () {
     ReactDOM.render(React.createElement(App, null), document.getElementById("main"));
 });
-},{"./components/dashboard":5,"./components/saveEnter":6,"regenerator-runtime":1}]},{},[7]);
+},{"./components/dashboard":7,"./components/saveEnter":8,"regenerator-runtime":1}],10:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+
+function sortArr(type, prop) {
+    var arr = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    var dataType = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "string";
+
+    if (dataType === "string") {
+        if (type === "asc") return arr.sort(function (a, b) {
+            return (a[prop] ? a[prop].toString() : "").localeCompare(b[prop]);
+        });
+        return arr.sort(function (a, b) {
+            return (a[prop] ? a[prop].toString() : "").localeCompare(b[prop]);
+        }).reverse();
+    } else if (dataType === "number") {
+        if (type === "asc") return arr.sort(function (a, b) {
+            return a[prop] - b[prop];
+        });
+        return arr.sort(function (a, b) {
+            return b[prop] - a[prop];
+        });
+    }
+}
+
+function randomRange(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+function randomId() {
+    return Math.random().toString(36).substr(2, 4);
+}
+
+exports.default = {
+    sortArr: sortArr,
+    randomRange: randomRange,
+    randomId: randomId
+};
+},{}]},{},[9]);

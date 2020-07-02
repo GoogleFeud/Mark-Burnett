@@ -91,7 +91,7 @@ class App extends React.Component {
         if (val === "true") return true;
         if (val === "false") return false;
         if (val === "null" || val === "undefined") return null;
-        return val;
+        return val.replace(/\s+/g,' ').trim();
     }
 
     updatePlayer(id, key, value, internal = true) {
@@ -104,7 +104,6 @@ class App extends React.Component {
     }
 
     removeField(collection, fieldName) {
-        console.log(collection, fieldName);
         return this.delete(`/api/saves/${this.state.saveChosen}/${collection}/${fieldName}`);
     }
 

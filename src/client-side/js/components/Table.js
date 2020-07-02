@@ -65,7 +65,7 @@ var Table = function (_React$Component) {
                     );
                 });
             }
-            s.push(React.createElement(
+            if (this.props.addCol) s.push(React.createElement(
                 "td",
                 { scope: "col" },
                 React.createElement("input", { defaultValue: "New", className: "inputCh", key: s.length + 1, onKeyUp: function onKeyUp(e) {
@@ -76,7 +76,19 @@ var Table = function (_React$Component) {
                     } })
             ));
             var p = this.props.body(this.state.sort);
-            p.push();
+            if (this.props.addRow) {
+                p.push(React.createElement(
+                    "tr",
+                    null,
+                    React.createElement(
+                        "th",
+                        { scope: "row", onClick: function onClick() {
+                                _this2.props.addRow();
+                            } },
+                        "New"
+                    )
+                ));
+            }
             return React.createElement(
                 React.Fragment,
                 null,
@@ -89,18 +101,13 @@ var Table = function (_React$Component) {
                         React.createElement(
                             "tr",
                             null,
-                            React.createElement(
-                                "th",
-                                { scope: "col" },
-                                "#"
-                            ),
                             s
                         )
                     ),
                     React.createElement(
                         "tbody",
                         null,
-                        this.props.body(this.state.sort)
+                        p
                     )
                 )
             );

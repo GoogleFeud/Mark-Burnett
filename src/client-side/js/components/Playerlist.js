@@ -10,6 +10,14 @@ var _Table = require("./Table");
 
 var _Table2 = _interopRequireDefault(_Table);
 
+var _Input = require("./Input");
+
+var _Input2 = _interopRequireDefault(_Input);
+
+var _util = require("../util");
+
+var _util2 = _interopRequireDefault(_util);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -18,32 +26,20 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-function Input(props) {
-    return React.createElement("input", { defaultValue: props.value || " ", className: "inputCh", onBlur: function onBlur(e) {
-            if (props.player[props._key] == e.target.value) return;
-            props.update(props.player.id, props._key, e.target.value);
-        } });
-}
-
 function Player(props) {
     return React.createElement(
         "tr",
         null,
-        React.createElement(
-            "th",
-            { scope: "row" },
-            props.number
-        ),
         props.allProps.map(function (key) {
-            if (props.player[key] === null || props.player[key] === undefined) return React.createElement(
-                "td",
-                null,
-                React.createElement(Input, { player: props.player, _key: key, key: props.player.id, update: props.update })
-            );
+            var value = props.player[key];
+            if (value === null || value === undefined) value = undefined;
             return React.createElement(
                 "td",
                 null,
-                React.createElement(Input, { value: props.player[key], key: props.player.id, player: props.player, _key: key, update: props.update })
+                React.createElement(_Input2.default, { value: value, receive: function receive(e) {
+                        if (props.player[key] == e.target.value) return;
+                        props.update(props.player.id, key, e.target.value);
+                    } })
             );
         })
     );
@@ -146,7 +142,10 @@ var PlayerList = function (_React$Component) {
                 ),
                 React.createElement(
                     "button",
-                    { className: "r-btn" },
+                    { className: "r-btn", onClick: function onClick() {
+                            var rng = _this2.state.players[Math.floor(Math.random() * _this2.state.players.length)];
+                            window.alert("Name: " + rng.name + "\n\nId: " + rng.id);
+                        } },
                     "Random"
                 ),
                 React.createElement(_Table2.default, { context: [{ name: "Delete", action: function action(colName) {
@@ -161,7 +160,7 @@ var PlayerList = function (_React$Component) {
                         if (!sort.length) return _this2.state.players.map(function (p, i) {
                             return React.createElement(Player, { allProps: _this2.state.cols, key: p.id, number: i + 1, player: p, update: _this2.update.bind(_this2) });
                         });
-                        return sortArr(sort[1], sort[0], _this2.state.players, isNaN(sample) ? "string" : "number").map(function (p, i) {
+                        return _util2.default.sortArr(sort[1], sort[0], _this2.state.players, isNaN(sample) ? "string" : "number").map(function (p, i) {
                             return React.createElement(Player, { key: p.id, allProps: _this2.state.cols, number: i + 1, player: p, update: _this2.update.bind(_this2) });
                         });
                     } }),
@@ -191,29 +190,3 @@ var PlayerList = function (_React$Component) {
 }(React.Component);
 
 exports.default = PlayerList;
-
-
-function sortArr(type, prop) {
-    var arr = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-    var dataType = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "string";
-
-    if (dataType === "string") {
-        if (type === "asc") return arr.sort(function (a, b) {
-            return (a[prop] ? a[prop].toString() : "").localeCompare(b[prop]);
-        });
-        return arr.sort(function (a, b) {
-            return (a[prop] ? a[prop].toString() : "").localeCompare(b[prop]);
-        }).reverse();
-    } else if (dataType === "number") {
-        if (type === "asc") return arr.sort(function (a, b) {
-            return a[prop] - b[prop];
-        });
-        return arr.sort(function (a, b) {
-            return b[prop] - a[prop];
-        });
-    }
-}
-
-function deepCompareArrayOfSimilarObjects(arr1, arr2) {
-    return JSON.stringify(arr1) === JSON.stringify(arr2);
-}

@@ -258,7 +258,7 @@ var App = function (_React$Component) {
             if (val === "true") return true;
             if (val === "false") return false;
             if (val === "null" || val === "undefined") return null;
-            return val;
+            return val.replace(/\s+/g, ' ').trim();
         }
     }, {
         key: "updatePlayer",
@@ -279,7 +279,6 @@ var App = function (_React$Component) {
     }, {
         key: "removeField",
         value: function removeField(collection, fieldName) {
-            console.log(collection, fieldName);
             return this.delete("/api/saves/" + this.state.saveChosen + "/" + collection + "/" + fieldName);
         }
     }]);
